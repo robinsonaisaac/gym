@@ -3335,9 +3335,15 @@
                 if (!dateInput.value) {
                     dateInput.value = new Date().toISOString().split('T')[0];
                 }
+                
+                // Visual feedback for completion
+                showNotification('✓ Workout completed!', 'success');
             } else {
                 dayCard.classList.remove('completed');
                 dateInput.value = '';
+                
+                // Visual feedback for un-completion
+                showNotification('Workout unmarked', 'info');
             }
             
             // Immediate save to ensure data persistence
@@ -3345,9 +3351,52 @@
             
             // Update progress if on progress page
             if (document.getElementById('progressContainer').style.display !== 'none') {
-                updateProgressSummary();
-                initializeCharts();
+                setTimeout(() => {
+                    updateProgressSummary();
+                    initializeCharts();
+                }, 100);
             }
+        }
+
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            const colors = {
+                success: '#4caf50',
+                error: '#f44336',
+                info: '#2196f3',
+                warning: '#ff9800'
+            };
+            
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${colors[type]};
+                color: white;
+                padding: 10px 20px;
+                border-radius: 5px;
+                z-index: 1000;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+                transform: translateX(100%);
+                transition: transform 0.3s ease;
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            // Animate in
+            setTimeout(() => {
+                notification.style.transform = 'translateX(0)';
+            }, 10);
+            
+            // Animate out and remove
+            setTimeout(() => {
+                notification.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    if (document.body.contains(notification)) {
+                        document.body.removeChild(notification);
+                    }
+                }, 300);
+            }, 2000);
         }
 
         function saveData() {
@@ -3470,11 +3519,28 @@
         document.querySelectorAll('.cardio-inputs input').forEach(input => {
             input.addEventListener('input', function() {
                 saveData();
-                // Optional: Add visual feedback
+                
+                // Visual feedback
                 this.style.borderColor = '#4caf50';
                 setTimeout(() => {
                     this.style.borderColor = '';
                 }, 500);
+                
+                // Update progress if on progress page (debounced)
+                clearTimeout(window.cardioUpdateTimeout);
+                window.cardioUpdateTimeout = setTimeout(() => {
+                    if (document.getElementById('progressContainer').style.display !== 'none') {
+                        updateProgressSummary();
+                        // Only update cardio chart, not all charts for performance
+                        const cardioData = getCardioData();
+                        if (cardioChart && cardioData.dates.length > 0) {
+                            cardioChart.data.labels = cardioData.dates;
+                            cardioChart.data.datasets[0].data = cardioData.splits;
+                            cardioChart.data.datasets[1].data = cardioData.heartRates;
+                            cardioChart.update('none'); // No animation for smoother UX
+                        }
+                    }
+                }, 1000); // Wait 1 second after user stops typing
             });
         });
 
@@ -3503,10 +3569,41 @@
             // Add active class to progress button
             event.target.classList.add('active');
             
-            // Initialize charts and update data
+            // Show loading state
+            const progressHeader = document.querySelector('.progress-header h2');
+            const originalText = progressHeader.textContent;
+            progressHeader.textContent = 'Loading Progress Data...';
+            
+            // Initialize charts and update data with slight delay for smoother UX
             setTimeout(() => {
-                initializeCharts();
-                updateProgressSummary();
+                try {
+                    initializeCharts();
+                    updateProgressSummary();
+                    progressHeader.textContent = originalText;
+                    
+                    // Show a brief success indicator
+                    const indicator = document.createElement('div');
+                    indicator.style.cssText = `
+                        position: fixed; 
+                        top: 20px; 
+                        right: 20px; 
+                        background: #4caf50; 
+                        color: white; 
+                        padding: 10px 20px; 
+                        border-radius: 5px; 
+                        z-index: 1000;
+                        box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+                    `;
+                    indicator.textContent = '✓ Progress data loaded successfully';
+                    document.body.appendChild(indicator);
+                    
+                    setTimeout(() => {
+                        document.body.removeChild(indicator);
+                    }, 2000);
+                } catch (error) {
+                    console.error('Error loading progress data:', error);
+                    progressHeader.textContent = 'Error Loading Progress - Check Console';
+                }
             }, 100);
         }
 
@@ -3733,15 +3830,32 @@
             const saved = localStorage.getItem('workoutPlanData');
             if (!saved) return { completed: 0, total: totalWorkouts };
             
-            const data = JSON.parse(saved);
-            let completed = 0;
-            if (data.completions) {
-                Object.values(data.completions).forEach(completion => {
-                    if (completion.checked) completed++;
-                });
+            try {
+                const data = JSON.parse(saved);
+                let completed = 0;
+                let completedWithDates = 0;
+                
+                if (data.completions) {
+                    Object.values(data.completions).forEach(completion => {
+                        if (completion.checked) {
+                            completed++;
+                            if (completion.date) {
+                                completedWithDates++;
+                            }
+                        }
+                    });
+                }
+                
+                return { 
+                    completed, 
+                    completedWithDates,
+                    total: totalWorkouts,
+                    completionRate: totalWorkouts > 0 ? (completed / totalWorkouts) * 100 : 0
+                };
+            } catch (error) {
+                console.error('Error getting completion data:', error);
+                return { completed: 0, total: totalWorkouts, completionRate: 0 };
             }
-            
-            return { completed, total: totalWorkouts };
         }
 
         function getCardioData() {
@@ -3753,27 +3867,49 @@
             const splits = [];
             const heartRates = [];
             
-            if (data.cardioLogs) {
+            if (data.cardioLogs && data.completions) {
                 Object.entries(data.cardioLogs).forEach(([key, log]) => {
-                    if (log.split && log.hr && data.completions[key + '-check']?.date) {
-                        dates.push(data.completions[key + '-check'].date);
+                    // Look for corresponding completion data
+                    const checkboxId = key + '-check';
+                    const completion = data.completions[checkboxId];
+                    
+                    // Only include cardio data that has both workout completion and actual data
+                    if (log.split && log.hr && completion?.checked && completion?.date) {
+                        dates.push(completion.date);
                         
-                        // Convert split to seconds (assuming format like "2:15.0")
-                        const splitParts = log.split.split(':');
-                        if (splitParts.length === 2) {
+                        // Convert split to seconds - handle multiple formats
+                        let splitSeconds = 0;
+                        if (log.split.includes(':')) {
+                            // Format like "2:15.0" or "2:15"
+                            const splitParts = log.split.split(':');
                             const minutes = parseInt(splitParts[0]) || 0;
                             const seconds = parseFloat(splitParts[1]) || 0;
-                            splits.push(minutes * 60 + seconds);
+                            splitSeconds = minutes * 60 + seconds;
                         } else {
-                            splits.push(parseFloat(log.split) || 0);
+                            // Direct seconds format
+                            splitSeconds = parseFloat(log.split) || 0;
                         }
                         
+                        splits.push(splitSeconds);
                         heartRates.push(parseInt(log.hr) || 0);
                     }
                 });
+                
+                // Sort by date to ensure chronological order
+                const combined = dates.map((date, i) => ({
+                    date,
+                    split: splits[i],
+                    hr: heartRates[i]
+                })).sort((a, b) => new Date(a.date) - new Date(b.date));
+                
+                return {
+                    dates: combined.map(item => item.date),
+                    splits: combined.map(item => item.split),
+                    heartRates: combined.map(item => item.hr)
+                };
             }
             
-            return { dates, splits, heartRates };
+            return { dates: [], splits: [], heartRates: [] };
         }
 
         function getVolumeData() {
@@ -3802,11 +3938,13 @@
             const completionData = getCompletionData();
             const rmHistory = getRMHistory();
             const volumeData = getVolumeData();
+            const cardioData = getCardioData();
             
             // Update summary cards
-            document.getElementById('totalWorkouts').textContent = completionData.completed;
+            document.getElementById('totalWorkouts').textContent = 
+                `${completionData.completed}/${completionData.total}`;
             document.getElementById('completionRate').textContent = 
-                Math.round(completionData.completed / completionData.total * 100) + '%';
+                Math.round(completionData.completionRate) + '%';
             
             // Find strongest lift
             const currentLifts = {
@@ -3823,9 +3961,18 @@
             document.getElementById('strongestLift').textContent = 
                 `${strongestLift[0]}: ${strongestLift[1]}kg`;
             
-            // Calculate total volume
-            const totalVolume = Math.round(volumeData.reduce((a, b) => a + b, 0) * 1000);
+            // Calculate total volume based on actual completed workouts
+            const completedVolume = (completionData.completionRate / 100) * volumeData.reduce((a, b) => a + b, 0);
+            const totalVolume = Math.round(completedVolume * 1000);
             document.getElementById('totalVolume').textContent = totalVolume.toLocaleString();
+            
+            // Log some debug info for troubleshooting
+            console.log('Progress Summary Updated:', {
+                completionData,
+                cardioSessions: cardioData.dates.length,
+                rmHistoryEntries: rmHistory.dates.length,
+                estimatedTotalVolume: totalVolume
+            });
         }
 
         function saveRMProgress() {
@@ -3864,13 +4011,13 @@
             updateProgressSummary();
             
             // Clear form
-            document.getElementById('rmDate').value = '';
+            document.getElementById('rmDate').value = new Date().toISOString().split('T')[0];
             document.getElementById('rmSquat').value = '';
             document.getElementById('rmBench').value = '';
             document.getElementById('rmDeadlift').value = '';
             document.getElementById('rmOHP').value = '';
             
-            alert('Progress saved successfully!');
+            showNotification('🏋️ New 1RM progress saved!', 'success');
         }
 
         function exportData() {
