@@ -1,0 +1,3914 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>8-Week Dynamic Workout Plan</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 2.5em;
+        }
+        
+        .header p {
+            margin: 10px 0 0 0;
+            opacity: 0.9;
+        }
+        
+        .calculator {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        
+        .calculator h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+        
+        .input-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .input-group label {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #555;
+        }
+        
+        .input-group input, .input-group select {
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .week-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .week-btn {
+            padding: 10px 20px;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+        
+        .week-btn.active {
+            background: #667eea;
+            color: white;
+        }
+        
+        .week-btn:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .workout-container {
+            display: none;
+        }
+        
+        .workout-container.active {
+            display: block;
+        }
+        
+        .day-card {
+            background: white;
+            margin-bottom: 20px;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        
+        .day-card.completed {
+            background: #f0f8f0;
+            border: 2px solid #4caf50;
+        }
+        
+        .day-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .day-number {
+            width: 40px;
+            height: 40px;
+            background: #667eea;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 15px;
+            font-size: 0.9em;
+        }
+        
+        .day-title {
+            flex-grow: 1;
+        }
+        
+        .day-title h3 {
+            margin: 0;
+            color: #333;
+        }
+        
+        .day-title p {
+            margin: 5px 0 0 0;
+            color: #666;
+            font-size: 0.9em;
+        }
+        
+        .completion-tracker {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-left: auto;
+        }
+        
+        .completion-tracker input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+        
+        .completion-tracker input[type="date"] {
+            padding: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        .exercise {
+            background: #f8f9fa;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .exercise-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+        
+        .exercise-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            font-size: 0.9em;
+        }
+        
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .detail-label {
+            color: #666;
+            font-size: 0.85em;
+        }
+        
+        .detail-value {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .notes {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        
+        .notes h4 {
+            margin: 0 0 10px 0;
+            color: #856404;
+        }
+        
+        .notes ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        
+        .program-overview {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        
+        .phase-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .phase-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border-top: 3px solid #667eea;
+        }
+        
+        .phase-card h4 {
+            margin: 0 0 10px 0;
+            color: #667eea;
+        }
+        
+        .cardio-day {
+            background: #e8f5e9;
+            border-left-color: #4caf50;
+        }
+        
+        .rest-indicator {
+            display: inline-block;
+            background: #4caf50;
+            color: white;
+            padding: 2px 10px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            margin-left: 10px;
+        }
+        
+        .cardio-log {
+            background: #f0f8ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+        
+        .cardio-log h5 {
+            margin: 0 0 10px 0;
+            color: #1976d2;
+        }
+        
+        .cardio-inputs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+        }
+        
+        .cardio-inputs input {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        .hr-zones {
+            background: #e3f2fd;
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 10px;
+            font-size: 0.9em;
+        }
+        
+        .hr-zones table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .hr-zones td {
+            padding: 5px;
+            border-bottom: 1px solid #90caf9;
+        }
+        
+        .hr-zones td:first-child {
+            font-weight: 600;
+            color: #1565c0;
+        }
+        
+        .start-date-notice {
+            background: #e8eaf6;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 600;
+            color: #5e35b1;
+        }
+
+        .accessory-inputs {
+            background: #f0f0f0;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .accessory-inputs h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .progress-container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            display: none;
+        }
+
+        .progress-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .progress-controls {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .export-btn, .import-btn, .reset-btn {
+            padding: 10px 20px;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        .export-btn:hover, .import-btn:hover, .reset-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .chart-container {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .chart-container h3 {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .progress-summary {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+        }
+
+        .summary-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .summary-card h4 {
+            margin: 0 0 5px 0;
+        }
+
+        .summary-value {
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .summary-subtext {
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .rm-tracker {
+            margin-top: 20px;
+        }
+
+        .rm-form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .rm-input-group {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .rm-input-group label {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .save-rm-btn {
+            padding: 10px 20px;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        .save-rm-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>8-Week Dynamic Strength & Size Program</h1>
+        <p>Research-backed training for maximal muscle growth and strength gains</p>
+    </div>
+
+    <div class="start-date-notice">
+        Program starts on TUESDAY - Adjust your calendar accordingly!
+    </div>
+
+    <div class="program-overview">
+        <h2>Program Overview</h2>
+        <div class="phase-grid">
+            <div class="phase-card">
+                <h4>Weeks 1-2: Foundation</h4>
+                <p>Moderate intensity (70-80% 1RM), higher volume, technique focus</p>
+            </div>
+            <div class="phase-card">
+                <h4>Weeks 3-4: Intensification</h4>
+                <p>Increasing intensity (75-85% 1RM), moderate volume</p>
+            </div>
+            <div class="phase-card">
+                <h4>Weeks 5-6: Peak Strength</h4>
+                <p>High intensity (80-90% 1RM), lower volume, max effort</p>
+            </div>
+            <div class="phase-card">
+                <h4>Week 7: Deload</h4>
+                <p>Recovery week (60-70% 1RM), reduced volume</p>
+            </div>
+            <div class="phase-card">
+                <h4>Week 8: Testing</h4>
+                <p>New 1RM testing or high-intensity singles</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="calculator">
+        <h2>1RM Calculator & Settings</h2>
+        <div class="input-grid">
+            <div class="input-group">
+                <label for="squat">Squat 1RM (lbs/kg)</label>
+                <input type="number" id="squat" placeholder="315" value="315">
+            </div>
+            <div class="input-group">
+                <label for="bench">Bench Press 1RM</label>
+                <input type="number" id="bench" placeholder="225" value="225">
+            </div>
+            <div class="input-group">
+                <label for="deadlift">Deadlift 1RM</label>
+                <input type="number" id="deadlift" placeholder="405" value="405">
+            </div>
+            <div class="input-group">
+                <label for="ohp">Overhead Press 1RM</label>
+                <input type="number" id="ohp" placeholder="135" value="135">
+            </div>
+            <div class="input-group">
+                <label for="row">Barbell Row 1RM</label>
+                <input type="number" id="row" placeholder="185" value="185">
+            </div>
+            <div class="input-group">
+                <label for="pullup">Pull-up 1RM (BW + Added)</label>
+                <input type="number" id="pullup" placeholder="225" value="225">
+            </div>
+            <div class="input-group">
+                <label for="maxHR">Max Heart Rate</label>
+                <input type="number" id="maxHR" placeholder="190" value="190">
+            </div>
+            <div class="input-group">
+                <label for="roundTo">Round Weights To</label>
+                <select id="roundTo">
+                    <option value="2.5">2.5 lbs</option>
+                    <option value="5" selected>5 lbs</option>
+                    <option value="10">10 lbs</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="accessory-inputs">
+            <h3>Additional Exercise References (Auto-calculated)</h3>
+            <div class="input-grid">
+                <div class="input-group">
+                    <label>Incline Press</label>
+                    <input type="text" id="incline-ref" readonly value="85% of Bench">
+                </div>
+                <div class="input-group">
+                    <label>Close-Grip Bench</label>
+                    <input type="text" id="cgbp-ref" readonly value="80% of Bench">
+                </div>
+                <div class="input-group">
+                    <label>DB Press (total)</label>
+                    <input type="text" id="dbpress-ref" readonly value="70% of Bench">
+                </div>
+                <div class="input-group">
+                    <label>Front Squat</label>
+                    <input type="text" id="fsquat-ref" readonly value="80% of Squat">
+                </div>
+                <div class="input-group">
+                    <label>RDL/SLDL</label>
+                    <input type="text" id="rdl-ref" readonly value="70% of Deadlift">
+                </div>
+                <div class="input-group">
+                    <label>DB Row (each)</label>
+                    <input type="text" id="dbrow-ref" readonly value="40% of BB Row">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="week-selector">
+        <button class="week-btn active" onclick="showWeek(1)">Week 1-2</button>
+        <button class="week-btn" onclick="showWeek(3)">Week 3-4</button>
+        <button class="week-btn" onclick="showWeek(5)">Week 5-6</button>
+        <button class="week-btn" onclick="showWeek(7)">Week 7</button>
+        <button class="week-btn" onclick="showWeek(8)">Week 8</button>
+        <button class="week-btn" onclick="showProgressTracking()">📊 Progress</button>
+    </div>
+
+    <!-- Progress Tracking Section -->
+    <div class="progress-container" id="progressContainer" style="display: none;">
+        <div class="progress-header">
+            <h2>Progress Tracking & Analytics</h2>
+            <div class="progress-controls">
+                <button onclick="exportData()" class="export-btn">📥 Export Data</button>
+                <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importData(event)">
+                <button onclick="document.getElementById('importFile').click()" class="import-btn">📤 Import Data</button>
+                <button onclick="resetData()" class="reset-btn">🗑️ Reset All Data</button>
+            </div>
+        </div>
+
+        <!-- Progress Charts -->
+        <div class="charts-grid">
+            <div class="chart-container">
+                <h3>Strength Progress (1RM)</h3>
+                <canvas id="strengthChart" width="400" height="200"></canvas>
+            </div>
+            <div class="chart-container">
+                <h3>Workout Completion Rate</h3>
+                <canvas id="completionChart" width="400" height="200"></canvas>
+            </div>
+            <div class="chart-container">
+                <h3>Cardio Performance</h3>
+                <canvas id="cardioChart" width="400" height="200"></canvas>
+            </div>
+            <div class="chart-container">
+                <h3>Weekly Volume Trends</h3>
+                <canvas id="volumeChart" width="400" height="200"></canvas>
+            </div>
+        </div>
+
+        <!-- Progress Summary -->
+        <div class="progress-summary">
+            <h3>Program Summary</h3>
+            <div class="summary-grid">
+                <div class="summary-card">
+                    <h4>Total Workouts</h4>
+                    <div class="summary-value" id="totalWorkouts">0</div>
+                    <div class="summary-subtext">Completed</div>
+                </div>
+                <div class="summary-card">
+                    <h4>Completion Rate</h4>
+                    <div class="summary-value" id="completionRate">0%</div>
+                    <div class="summary-subtext">Overall</div>
+                </div>
+                <div class="summary-card">
+                    <h4>Strongest Lift</h4>
+                    <div class="summary-value" id="strongestLift">-</div>
+                    <div class="summary-subtext">Current Max</div>
+                </div>
+                <div class="summary-card">
+                    <h4>Total Volume</h4>
+                    <div class="summary-value" id="totalVolume">0</div>
+                    <div class="summary-subtext">lbs lifted</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 1RM Tracking Form -->
+        <div class="rm-tracker">
+            <h3>Update Your 1RM Progress</h3>
+            <div class="rm-form">
+                <div class="rm-input-group">
+                    <label>Date:</label>
+                    <input type="date" id="rmDate" value="">
+                </div>
+                <div class="rm-input-group">
+                    <label>Squat 1RM:</label>
+                    <input type="number" id="rmSquat" placeholder="315">
+                </div>
+                <div class="rm-input-group">
+                    <label>Bench 1RM:</label>
+                    <input type="number" id="rmBench" placeholder="225">
+                </div>
+                <div class="rm-input-group">
+                    <label>Deadlift 1RM:</label>
+                    <input type="number" id="rmDeadlift" placeholder="405">
+                </div>
+                <div class="rm-input-group">
+                    <label>OHP 1RM:</label>
+                    <input type="number" id="rmOHP" placeholder="135">
+                </div>
+                <button onclick="saveRMProgress()" class="save-rm-btn">💾 Save Progress</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Week 1-2 -->
+    <div class="workout-container active" id="week1">
+        <!-- Tuesday (Day 1) -->
+        <div class="day-card" data-week="1" data-day="1">
+            <div class="day-header">
+                <div class="day-number">TUE</div>
+                <div class="day-title">
+                    <h3>Tuesday - Lower Power</h3>
+                    <p>Heavy leg work for strength and power</p>
+                </div>
+                <div class="completion-tracker">
+                    <input type="checkbox" id="w1d1-check" onchange="toggleCompletion(this)">
+                    <input type="date" id="w1d1-date">
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Back Squat</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Sets x Reps</span>
+                        <span class="detail-value">5 x 5</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Weight</span>
+                        <span class="detail-value squat-weight-75">75% 1RM</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Rest</span>
+                        <span class="detail-value">3-4 min</span>
+                    </div>
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Romanian Deadlift</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Sets x Reps</span>
+                        <span class="detail-value">4 x 6</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Weight</span>
+                        <span class="detail-value rdl-weight-65">65% DL 1RM</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Rest</span>
+                        <span class="detail-value">3 min</span>
+                    </div>
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Front Squat</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Sets x Reps</span>
+                        <span class="detail-value">3 x 8</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Weight</span>
+                        <span class="detail-value fsquat-weight-60">60% Squat 1RM</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Rest</span>
+                        <span class="detail-value">2-3 min</span>
+                    </div>
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Walking Lunges</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Sets x Reps</span>
+                        <span class="detail-value">3 x 12/leg</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Weight</span>
+                        <span class="detail-value lunge-weight">25% Squat 1RM</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Rest</span>
+                        <span class="detail-value">2 min</span>
+                    </div>
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Leg Curls</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Sets x Reps</span>
+                        <span class="detail-value">3 x 12-15</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Weight</span>
+                        <span class="detail-value">Moderate</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Rest</span>
+                        <span class="detail-value">90 sec</span>
+                    </div>
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Calf Raises</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Sets x Reps</span>
+                        <span class="detail-value">4 x 15-20</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Weight</span>
+                        <span class="detail-value calf-weight">50% Squat 1RM</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Rest</span>
+                        <span class="detail-value">60 sec</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Wednesday (Day 2) -->
+        <div class="day-card cardio-day" data-week="1" data-day="2">
+            <div class="day-header">
+                <div class="day-number">WED</div>
+                <div class="day-title">
+                    <h3>Wednesday - Active Recovery</h3>
+                    <p>Steady state cardio for recovery</p>
+                    <span class="rest-indicator">Recovery Day</span>
+                </div>
+                <div class="completion-tracker">
+                    <input type="checkbox" id="w1d2-check" onchange="toggleCompletion(this)">
+                    <input type="date" id="w1d2-date">
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Steady State Cardio Options</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Option 1: Rowing</span>
+                        <span class="detail-value">2 x 30 min</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Option 2: Biking</span>
+                        <span class="detail-value">60 min continuous</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Intensity</span>
+                        <span class="detail-value">Zone 2 (65-75% max HR)</span>
+                    </div>
+                </div>
+            </div>
+            <div class="hr-zones">
+                <h5>Your Heart Rate Zones:</h5>
+                <table>
+                    <tr>
+                        <td>Zone 2 (Aerobic):</td>
+                        <td class="hr-zone-2">124-143 bpm</td>
+                    </tr>
+                    <tr>
+                        <td>Zone 3 (Threshold):</td>
+                        <td class="hr-zone-3">143-162 bpm</td>
+                    </tr>
+                    <tr>
+                        <td>Zone 4 (VO2 Max):</td>
+                        <td class="hr-zone-4">162-171 bpm</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="cardio-log">
+                <h5>Log Your Session:</h5>
+                <div class="cardio-inputs">
+                    <input type="text" placeholder="Avg Split/500m" id="w1d2-split">
+                    <input type="number" placeholder="Avg HR" id="w1d2-hr">
+                    <input type="number" placeholder="Distance (m)" id="w1d2-distance">
+                    <input type="text" placeholder="Notes" id="w1d2-notes">
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Mobility Work</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Duration</span>
+                        <span class="detail-value">15-20 min</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Focus</span>
+                        <span class="detail-value">Hips, Shoulders, Thoracic</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Thursday (Day 3) -->
+        <div class="day-card" data-week="1" data-day="3">
+            <div class="day-header">
+                <div class="day-number">THU</div>
+                <div class="day-title">
+                    <h3>Thursday - Push Hypertrophy</h3>
+                    <p>Volume work for chest, shoulders, triceps</p>
+                </div>
+                <div class="completion-tracker">
+                    <input type="checkbox" id="w1d3-check" onchange="toggleCompletion(this)">
+                    <input type="date" id="w1d3-date">
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Incline DB Press</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Sets x Reps</span>
+                        <span class="detail-value">4 x 8-10</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Weight (each)</span>
+                        <span class="detail-value incdb-weight">35% Bench 1RM</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Rest</span>
+                        <span class="detail-value">2 min</span>
+                    </div>
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">DB Shoulder Press</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Sets x Reps</span>
+                        <span class="detail-value">4 x 10-12</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Weight (each)</span>
+                        <span class="detail-value dbohp-weight">35% OHP 1RM</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Rest</span>
+                        <span class="detail-value">90 sec</span>
+                    </div>
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Cable Flyes</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Sets x Reps</span>
+                        <span class="detail-value">3 x 12-15</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Weight</span>
+                        <span class="detail-value fly-weight">15% Bench 1RM</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Rest</span>
+                        <span class="detail-value">60 sec</span>
+                    </div>
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Lateral Raises</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Sets x Reps</span>
+                        <span class="detail-value">4 x 15-20</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Weight (each)</span>
+                        <span class="detail-value lat-weight">10% OHP 1RM</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Rest</span>
+                        <span class="detail-value">45 sec</span>
+                    </div>
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Close-Grip Bench Press</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Sets x Reps</span>
+                        <span class="detail-value">3 x 10-12</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Weight</span>
+                        <span class="detail-value cgbp-weight-60">60% Bench 1RM</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Rest</span>
+                        <span class="detail-value">90 sec</span>
+                    </div>
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Tricep Extensions</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Sets x Reps</span>
+                        <span class="detail-value">3 x 15-20</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Weight</span>
+                        <span class="detail-value tri-weight">20% Bench 1RM</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Rest</span>
+                        <span class="detail-value">45 sec</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Friday (Day 4) -->
+        <div class="day-card" data-week="1" data-day="4">
+            <div class="day-header">
+                <div class="day-number">FRI</div>
+                <div class="day-title">
+                    <h3>Friday - Pull Hypertrophy</h3>
+                    <p>Volume work for back and biceps</p>
+                </div>
+                <div class="completion-tracker">
+                    <input type="checkbox" id="w1d4-check" onchange="toggleCompletion(this)">
+                    <input type="date" id="w1d4-date">
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Deadlift</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Sets x Reps</span>
+                        <span class="detail-value">4 x 5</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Weight</span>
+                        <span class="detail-value deadlift-weight-75">75% 1RM</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Rest</span>
+                        <span class="detail-value">3-4 min</span>
+                    </div>
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">T-Bar Row</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Sets x Reps</span>
+                        <span class="detail-value">4 x 8-10</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Weight</span>
+                        <span class="detail-value tbar-weight">70% Row 1RM</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Rest</span>
+                        <span class="detail-value">2 min</span>
+                    </div>
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Lat Pulldowns</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Sets x Reps</span>
+                        <span class="detail-value">3 x 10-12</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Weight</span>
+                        <span class="detail-value lat-pd-weight">60% Pull-up 1RM</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Rest</span>
+                        <span class="detail-value">90 sec</span>
+                    </div>
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Cable Rows</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Sets x Reps</span>
+                        <span class="detail-value">3 x 12-15</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Weight</span>
+                        <span class="detail-value cable-row-weight">65% Row 1RM</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Rest</span>
+                        <span class="detail-value">60 sec</span>
+                    </div>
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Barbell Curls</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Sets x Reps</span>
+                        <span class="detail-value">4 x 10-12</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Weight</span>
+                        <span class="detail-value curl-weight">30% Row 1RM</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Rest</span>
+                        <span class="detail-value">90 sec</span>
+                    </div>
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Hammer Curls</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Sets x Reps</span>
+                        <span class="detail-value">3 x 12-15</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Weight (each)</span>
+                        <span class="detail-value hammer-weight">12% Row 1RM</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Rest</span>
+                        <span class="detail-value">60 sec</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Saturday (Day 5) -->
+        <div class="day-card" data-week="1" data-day="5">
+            <div class="day-header">
+                <div class="day-number">SAT</div>
+                <div class="day-title">
+                    <h3>Saturday - Legs Hypertrophy</h3>
+                    <p>Volume work for quads, hamstrings, glutes</p>
+                </div>
+                <div class="completion-tracker">
+                    <input type="checkbox" id="w1d5-check" onchange="toggleCompletion(this)">
+                    <input type="date" id="w1d5-date">
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">High Bar Squat</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Sets x Reps</span>
+                        <span class="detail-value">4 x 8-10</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Weight</span>
+                        <span class="detail-value squat-weight-70">70% 1RM</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Rest</span>
+                        <span class="detail-value">2-3 min</span>
+                    </div>
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Leg Press</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Sets x Reps</span>
+                        <span class="detail-value">4 x 12-15</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Weight</span>
+                        <span class="detail-value legpress-weight">150% Squat 1RM</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Rest</span>
+                        <span class="detail-value">2 min</span>
+                    </div>
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Bulgarian Split Squats</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Sets x Reps</span>
+                        <span class="detail-value">3 x 10/leg</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Weight (total)</span>
+                        <span class="detail-value bss-weight">20% Squat 1RM</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Rest</span>
+                        <span class="detail-value">90 sec</span>
+                    </div>
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Stiff Leg Deadlift</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Sets x Reps</span>
+                        <span class="detail-value">3 x 10-12</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Weight</span>
+                        <span class="detail-value sldl-weight-60">60% DL 1RM</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Rest</span>
+                        <span class="detail-value">2 min</span>
+                    </div>
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Leg Extensions</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Sets x Reps</span>
+                        <span class="detail-value">3 x 15-20</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Weight</span>
+                        <span class="detail-value legext-weight">30% Squat 1RM</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Rest</span>
+                        <span class="detail-value">60 sec</span>
+                    </div>
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Walking Lunges</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Sets x Reps</span>
+                        <span class="detail-value">3 x 20 total</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Weight</span>
+                        <span class="detail-value lunge-light-weight">15% Squat 1RM</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Rest</span>
+                        <span class="detail-value">90 sec</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sunday (Day 6) -->
+        <div class="day-card cardio-day" data-week="1" data-day="6">
+            <div class="day-header">
+                <div class="day-number">SUN</div>
+                <div class="day-title">
+                    <h3>Sunday - Active Recovery / Rowing Option</h3>
+                    <p>Light cardio or rowing work (Week 2: 2k test prep)</p>
+                    <span class="rest-indicator">Recovery Day</span>
+                </div>
+                <div class="completion-tracker">
+                    <input type="checkbox" id="w1d6-check" onchange="toggleCompletion(this)">
+                    <input type="date" id="w1d6-date">
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Option 1: Steady State Cardio</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Rowing</span>
+                        <span class="detail-value">2 x 30 min</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Biking</span>
+                        <span class="detail-value">60 min</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Intensity</span>
+                        <span class="detail-value">Zone 2</span>
+                    </div>
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Option 2 (Week 2): Rowing 2k Prep</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Warm-up</span>
+                        <span class="detail-value">10 min easy</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Main Set</span>
+                        <span class="detail-value">4 x 500m @ 2k pace</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Rest</span>
+                        <span class="detail-value">2 min between</span>
+                    </div>
+                </div>
+            </div>
+            <div class="cardio-log">
+                <h5>Log Your Session:</h5>
+                <div class="cardio-inputs">
+                    <input type="text" placeholder="Avg Split/500m" id="w1d6-split">
+                    <input type="number" placeholder="Avg HR" id="w1d6-hr">
+                    <input type="number" placeholder="Distance (m)" id="w1d6-distance">
+                    <input type="text" placeholder="Notes" id="w1d6-notes">
+                </div>
+            </div>
+        </div>
+
+        <!-- Monday (Day 7) -->
+        <div class="day-card" data-week="1" data-day="7">
+            <div class="day-header">
+                <div class="day-number">MON</div>
+                <div class="day-title">
+                    <h3>Monday - Upper Power</h3>
+                    <p>Heavy compound movements for upper body strength</p>
+                </div>
+                <div class="completion-tracker">
+                    <input type="checkbox" id="w1d7-check" onchange="toggleCompletion(this)">
+                    <input type="date" id="w1d7-date">
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Bench Press</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Sets x Reps</span>
+                        <span class="detail-value">5 x 5</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Weight</span>
+                        <span class="detail-value bench-weight-75">75% 1RM</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Rest</span>
+                        <span class="detail-value">3-4 min</span>
+                    </div>
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Weighted Pull-ups</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Sets x Reps</span>
+                        <span class="detail-value">4 x 6</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Weight</span>
+                        <span class="detail-value pullup-weight-70">70% 1RM</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Rest</span>
+                        <span class="detail-value">3 min</span>
+                    </div>
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Overhead Press</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Sets x Reps</span>
+                        <span class="detail-value">4 x 8</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Weight</span>
+                        <span class="detail-value ohp-weight-70">70% 1RM</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Rest</span>
+                        <span class="detail-value">2-3 min</span>
+                    </div>
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Barbell Row</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Sets x Reps</span>
+                        <span class="detail-value">4 x 8</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Weight</span>
+                        <span class="detail-value row-weight-70">70% 1RM</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Rest</span>
+                        <span class="detail-value">2-3 min</span>
+                    </div>
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Dips</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Sets x Reps</span>
+                        <span class="detail-value">3 x 10-12</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Weight</span>
+                        <span class="detail-value dip-weight">BW + 10% Bench</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Rest</span>
+                        <span class="detail-value">2 min</span>
+                    </div>
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Face Pulls</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Sets x Reps</span>
+                        <span class="detail-value">3 x 15-20</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Weight</span>
+                        <span class="detail-value face-weight">15% Row 1RM</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Rest</span>
+                        <span class="detail-value">1 min</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="notes">
+            <h4>Week 1-2 Notes:</h4>
+            <ul>
+                <li>Focus on perfect form and establishing movement patterns</li>
+                <li>RPE 7-8 means 2-3 reps left in the tank</li>
+                <li>Track all weights and aim to increase by 2.5-5% in week 2</li>
+                <li>Ensure adequate protein intake (0.8-1g per lb bodyweight)</li>
+                <li>Sleep 7-9 hours for optimal recovery</li>
+                <li>For steady state cardio: maintain conversational pace in Zone 2</li>
+                <li>Log your cardio splits to track improvement over 8 weeks</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Week 3-4 -->
+    <div class="workout-container" id="week3">
+        <!-- Tuesday (Day 1) -->
+        <div class="day-card" data-week="3" data-day="1">
+            <div class="day-header">
+                <div class="day-number">TUE</div>
+                <div class="day-title">
+                    <h3>Tuesday - Lower Power</h3>
+                    <p>Increased intensity leg work</p>
+                </div>
+                <div class="completion-tracker">
+                    <input type="checkbox" id="w3d1-check" onchange="toggleCompletion(this)">
+                    <input type="date" id="w3d1-date">
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Back Squat</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Sets x Reps</span>
+                        <span class="detail-value">5 x 4</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Weight</span>
+                        <span class="detail-value squat-weight-80">80% 1RM</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Rest</span>
+                        <span class="detail-value">4 min</span>
+                    </div>
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Romanian Deadlift</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Sets x Reps</span>
+                        <span class="detail-value">4 x 5</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Weight</span>
+                        <span class="detail-value rdl-weight-70">70% DL 1RM</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Rest</span>
+                        <span class="detail-value">3 min</span>
+                    </div>
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Front Squat</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Sets x Reps</span>
+                        <span class="detail-value">3 x 6</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Weight</span>
+                        <span class="detail-value fsquat-weight-65">65% Squat 1RM</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Rest</span>
+                        <span class="detail-value">3 min</span>
+                    </div>
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Leg Press</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Sets x Reps</span>
+                        <span class="detail-value">3 x 10</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Weight</span>
+                        <span class="detail-value legpress-weight-heavy">175% Squat 1RM</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Rest</span>
+                        <span class="detail-value">2 min</span>
+                    </div>
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Leg Curls</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Sets x Reps</span>
+                        <span class="detail-value">3 x 10-12</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Weight</span>
+                        <span class="detail-value">Heavy</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Rest</span>
+                        <span class="detail-value">90 sec</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Wednesday (Day 2) -->
+        <div class="day-card cardio-day" data-week="3" data-day="2">
+            <div class="day-header">
+                <div class="day-number">WED</div>
+                <div class="day-title">
+                    <h3>Wednesday - Active Recovery</h3>
+                    <p>Steady state cardio</p>
+                    <span class="rest-indicator">Recovery Day</span>
+                </div>
+                <div class="completion-tracker">
+                    <input type="checkbox" id="w3d2-check" onchange="toggleCompletion(this)">
+                    <input type="date" id="w3d2-date">
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Steady State Cardio</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Rowing</span>
+                        <span class="detail-value">2 x 30 min</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Biking</span>
+                        <span class="detail-value">60 min</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Intensity</span>
+                        <span class="detail-value">Zone 2</span>
+                    </div>
+                </div>
+            </div>
+            <div class="cardio-log">
+                <h5>Log Your Session:</h5>
+                <div class="cardio-inputs">
+                    <input type="text" placeholder="Avg Split/500m" id="w3d2-split">
+                    <input type="number" placeholder="Avg HR" id="w3d2-hr">
+                    <input type="number" placeholder="Distance (m)" id="w3d2-distance">
+                    <input type="text" placeholder="Notes" id="w3d2-notes">
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Foam Rolling</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Duration</span>
+                        <span class="detail-value">10-15 min</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Focus</span>
+                        <span class="detail-value">Full body</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Thursday (Day 3) -->
+        <div class="day-card" data-week="3" data-day="3">
+            <div class="day-header">
+                <div class="day-number">THU</div>
+                <div class="day-title">
+                    <h3>Thursday - Push Hypertrophy</h3>
+                    <p>Volume with intensity</p>
+                </div>
+                <div class="completion-tracker">
+                    <input type="checkbox" id="w3d3-check" onchange="toggleCompletion(this)">
+                    <input type="date" id="w3d3-date">
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Incline Barbell Press</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Sets x Reps</span>
+                        <span class="detail-value">4 x 6-8</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Weight</span>
+                        <span class="detail-value incline-weight-70">70% Bench 1RM</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Rest</span>
+                        <span class="detail-value">2-3 min</span>
+                    </div>
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">DB Shoulder Press</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Sets x Reps</span>
+                        <span class="detail-value">4 x 8-10</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Weight (each)</span>
+                        <span class="detail-value dbohp-weight-heavy">40% OHP 1RM</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Rest</span>
+                        <span class="detail-value">2 min</span>
+                    </div>
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Decline Bench Press</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Sets x Reps</span>
+                        <span class="detail-value">3 x 8-10</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Weight</span>
+                        <span class="detail-value decline-weight-65">65% Bench 1RM</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Rest</span>
+                        <span class="detail-value">2 min</span>
+                    </div>
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Arnold Press</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Sets x Reps</span>
+                        <span class="detail-value">3 x 10-12</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Weight (each)</span>
+                        <span class="detail-value arnold-weight">30% OHP 1RM</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Rest</span>
+                        <span class="detail-value">90 sec</span>
+                    </div>
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Superset: Lateral + Front Raises</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Sets x Reps</span>
+                        <span class="detail-value">3 x 12-15 each</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Weight (each)</span>
+                        <span class="detail-value raise-weight">12% OHP 1RM</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Rest</span>
+                        <span class="detail-value">60 sec</span>
+                    </div>
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Overhead Tricep Extension</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Sets x Reps</span>
+                        <span class="detail-value">3 x 12-15</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Weight</span>
+                        <span class="detail-value overhead-tri-weight">25% Bench 1RM</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Rest</span>
+                        <span class="detail-value">60 sec</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Friday (Day 4) -->
+        <div class="day-card" data-week="3" data-day="4">
+            <div class="day-header">
+                <div class="day-number">FRI</div>
+                <div class="day-title">
+                    <h3>Friday - Pull Hypertrophy</h3>
+                    <p>Back and biceps intensity</p>
+                </div>
+                <div class="completion-tracker">
+                    <input type="checkbox" id="w3d4-check" onchange="toggleCompletion(this)">
+                    <input type="date" id="w3d4-date">
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Deadlift</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Sets x Reps</span>
+                        <span class="detail-value">4 x 4</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Weight</span>
+                        <span class="detail-value deadlift-weight-80">80% 1RM</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Rest</span>
+                        <span class="detail-value">4 min</span>
+                    </div>
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Bent Over BB Row</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Sets x Reps</span>
+                        <span class="detail-value">4 x 6-8</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Weight</span>
+                        <span class="detail-value row-weight-75">75% Row 1RM</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Rest</span>
+                        <span class="detail-value">2-3 min</span>
+                    </div>
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Wide Grip Pulldowns</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Sets x Reps</span>
+                        <span class="detail-value">3 x 8-10</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Weight</span>
+                        <span class="detail-value wide-pd-weight">65% Pull-up 1RM</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Rest</span>
+                        <span class="detail-value">2 min</span>
+                    </div>
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">DB Row</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Sets x Reps</span>
+                        <span class="detail-value">3 x 10-12/arm</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Weight (each)</span>
+                        <span class="detail-value dbrow-weight">40% Row 1RM</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Rest</span>
+                        <span class="detail-value">90 sec</span>
+                    </div>
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Preacher Curls</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Sets x Reps</span>
+                        <span class="detail-value">4 x 8-10</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Weight</span>
+                        <span class="detail-value preacher-weight">35% Row 1RM</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Rest</span>
+                        <span class="detail-value">90 sec</span>
+                    </div>
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Cable Curls</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Sets x Reps</span>
+                        <span class="detail-value">3 x 12-15</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Weight</span>
+                        <span class="detail-value cable-curl-weight">25% Row 1RM</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Rest</span>
+                        <span class="detail-value">60 sec</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Saturday (Day 5) -->
+        <div class="day-card" data-week="3" data-day="5">
+            <div class="day-header">
+                <div class="day-number">SAT</div>
+                <div class="day-title">
+                    <h3>Saturday - Legs Hypertrophy</h3>
+                    <p>Intense leg volume</p>
+                </div>
+                <div class="completion-tracker">
+                    <input type="checkbox" id="w3d5-check" onchange="toggleCompletion(this)">
+                    <input type="date" id="w3d5-date">
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Pause Squat</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Sets x Reps</span>
+                        <span class="detail-value">4 x 6 (2 sec pause)</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Weight</span>
+                        <span class="detail-value squat-weight-75">75% 1RM</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Rest</span>
+                        <span class="detail-value">3 min</span>
+                    </div>
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Hack Squat</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Sets x Reps</span>
+                        <span class="detail-value">4 x 10-12</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Weight</span>
+                        <span class="detail-value hack-weight">120% Squat 1RM</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Rest</span>
+                        <span class="detail-value">2 min</span>
+                    </div>
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Good Mornings</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Sets x Reps</span>
+                        <span class="detail-value">3 x 10</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Weight</span>
+                        <span class="detail-value gm-weight-40">40% Squat 1RM</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Rest</span>
+                        <span class="detail-value">2 min</span>
+                    </div>
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Single Leg RDL</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Sets x Reps</span>
+                        <span class="detail-value">3 x 10/leg</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Weight (each)</span>
+                        <span class="detail-value slrdl-weight">15% DL 1RM</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Rest</span>
+                        <span class="detail-value">90 sec</span>
+                    </div>
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Goblet Squat</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Sets x Reps</span>
+                        <span class="detail-value">3 x 15</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Weight</span>
+                        <span class="detail-value goblet-weight">25% Squat 1RM</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Rest</span>
+                        <span class="detail-value">90 sec</span>
+                    </div>
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Seated Calf Raises</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Sets x Reps</span>
+                        <span class="detail-value">4 x 15-20</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Weight</span>
+                        <span class="detail-value seated-calf-weight">40% Squat 1RM</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Rest</span>
+                        <span class="detail-value">60 sec</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sunday (Day 6) -->
+        <div class="day-card cardio-day" data-week="3" data-day="6">
+            <div class="day-header">
+                <div class="day-number">SUN</div>
+                <div class="day-title">
+                    <h3>Sunday - Active Recovery / Rowing Option</h3>
+                    <p>Light cardio or rowing work (Week 4: AT workout)</p>
+                    <span class="rest-indicator">Recovery Day</span>
+                </div>
+                <div class="completion-tracker">
+                    <input type="checkbox" id="w3d6-check" onchange="toggleCompletion(this)">
+                    <input type="date" id="w3d6-date">
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Option 1: Steady State</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Duration</span>
+                        <span class="detail-value">30-40 min</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Intensity</span>
+                        <span class="detail-value">Zone 2</span>
+                    </div>
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Option 2 (Week 4): AT Workout</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Warm-up</span>
+                        <span class="detail-value">10 min easy</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Main Set</span>
+                        <span class="detail-value">3 x 10 min @ AT pace</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Rest</span>
+                        <span class="detail-value">3 min between</span>
+                    </div>
+                </div>
+            </div>
+            <div class="cardio-log">
+                <h5>Log Your Session:</h5>
+                <div class="cardio-inputs">
+                    <input type="text" placeholder="Avg Split/500m" id="w3d6-split">
+                    <input type="number" placeholder="Avg HR" id="w3d6-hr">
+                    <input type="number" placeholder="Distance (m)" id="w3d6-distance">
+                    <input type="text" placeholder="Notes" id="w3d6-notes">
+                </div>
+            </div>
+        </div>
+
+        <!-- Monday (Day 7) -->
+        <div class="day-card" data-week="3" data-day="7">
+            <div class="day-header">
+                <div class="day-number">MON</div>
+                <div class="day-title">
+                    <h3>Monday - Upper Power</h3>
+                    <p>Increased intensity</p>
+                </div>
+                <div class="completion-tracker">
+                    <input type="checkbox" id="w3d7-check" onchange="toggleCompletion(this)">
+                    <input type="date" id="w3d7-date">
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Bench Press</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Sets x Reps</span>
+                        <span class="detail-value">5 x 4</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Weight</span>
+                        <span class="detail-value bench-weight-80">80% 1RM</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Rest</span>
+                        <span class="detail-value">3-4 min</span>
+                    </div>
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Weighted Pull-ups</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Sets x Reps</span>
+                        <span class="detail-value">4 x 5</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Weight</span>
+                        <span class="detail-value pullup-weight-75">75% 1RM</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Rest</span>
+                        <span class="detail-value">3 min</span>
+                    </div>
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Overhead Press</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Sets x Reps</span>
+                        <span class="detail-value">4 x 6</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Weight</span>
+                        <span class="detail-value ohp-weight-75">75% 1RM</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Rest</span>
+                        <span class="detail-value">3 min</span>
+                    </div>
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Barbell Row</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Sets x Reps</span>
+                        <span class="detail-value">4 x 6</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Weight</span>
+                        <span class="detail-value row-weight-75">75% 1RM</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Rest</span>
+                        <span class="detail-value">3 min</span>
+                    </div>
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Weighted Dips</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Sets x Reps</span>
+                        <span class="detail-value">3 x 8-10</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Weight</span>
+                        <span class="detail-value dip-weight-heavy">BW + 15% Bench</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Rest</span>
+                        <span class="detail-value">2 min</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="notes">
+            <h4>Week 3-4 Notes:</h4>
+            <ul>
+                <li>Intensity increases - maintain perfect form despite heavier weights</li>
+                <li>If you can't complete all reps with good form, reduce weight by 5%</li>
+                <li>Begin incorporating power movements (explosive concentric)</li>
+                <li>Consider adding creatine monohydrate (5g daily) if not already using</li>
+                <li>Monitor fatigue levels - extra rest day if needed</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Week 5-6 -->
+    <div class="workout-container" id="week5">
+        <!-- Tuesday (Day 1) -->
+        <div class="day-card" data-week="5" data-day="1">
+            <div class="day-header">
+                <div class="day-number">TUE</div>
+                <div class="day-title">
+                    <h3>Tuesday - Lower Power Peak</h3>
+                    <p>Maximum leg strength</p>
+                </div>
+                <div class="completion-tracker">
+                    <input type="checkbox" id="w5d1-check" onchange="toggleCompletion(this)">
+                    <input type="date" id="w5d1-date">
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Back Squat</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Sets x Reps</span>
+                        <span class="detail-value">5 x 3</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Weight</span>
+                        <span class="detail-value squat-weight-85">85% 1RM</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Rest</span>
+                        <span class="detail-value">4-5 min</span>
+                    </div>
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Sumo Deadlift</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Sets x Reps</span>
+                        <span class="detail-value">4 x 3</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Weight</span>
+                        <span class="detail-value sumo-weight-75">75% DL 1RM</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Rest</span>
+                        <span class="detail-value">4 min</span>
+                    </div>
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Box Squat</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Sets x Reps</span>
+                        <span class="detail-value">3 x 5</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Weight</span>
+                        <span class="detail-value box-weight-70">70% Squat 1RM</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Rest</span>
+                        <span class="detail-value">3 min</span>
+                    </div>
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Leg Press</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Sets x Reps</span>
+                        <span class="detail-value">3 x 8</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Weight</span>
+                        <span class="detail-value legpress-max-weight">200% Squat 1RM</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Rest</span>
+                        <span class="detail-value">2-3 min</span>
+                    </div>
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Nordic Curls</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Sets x Reps</span>
+                        <span class="detail-value">3 x 5-8</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Weight</span>
+                        <span class="detail-value">BW/Assisted</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Rest</span>
+                        <span class="detail-value">2 min</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Wednesday (Day 2) -->
+        <div class="day-card cardio-day" data-week="5" data-day="2">
+            <div class="day-header">
+                <div class="day-number">WED</div>
+                <div class="day-title">
+                    <h3>Wednesday - Active Recovery</h3>
+                    <p>Light movement only</p>
+                    <span class="rest-indicator">Recovery Day</span>
+                </div>
+                <div class="completion-tracker">
+                    <input type="checkbox" id="w5d2-check" onchange="toggleCompletion(this)">
+                    <input type="date" id="w5d2-date">
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Easy Cardio</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Duration</span>
+                        <span class="detail-value">25-30 min</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Intensity</span>
+                        <span class="detail-value">Very Light (Zone 1-2)</span>
+                    </div>
+                </div>
+            </div>
+            <div class="cardio-log">
+                <h5>Log Your Session:</h5>
+                <div class="cardio-inputs">
+                    <input type="text" placeholder="Avg Split/500m" id="w5d2-split">
+                    <input type="number" placeholder="Avg HR" id="w5d2-hr">
+                    <input type="number" placeholder="Distance (m)" id="w5d2-distance">
+                    <input type="text" placeholder="Notes" id="w5d2-notes">
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Stretching</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Duration</span>
+                        <span class="detail-value">20 min</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Focus</span>
+                        <span class="detail-value">Full body</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Thursday (Day 3) -->
+        <div class="day-card" data-week="5" data-day="3">
+            <div class="day-header">
+                <div class="day-number">THU</div>
+                <div class="day-title">
+                    <h3>Thursday - Push Power</h3>
+                    <p>Heavy pressing focus</p>
+                </div>
+                <div class="completion-tracker">
+                    <input type="checkbox" id="w5d3-check" onchange="toggleCompletion(this)">
+                    <input type="date" id="w5d3-date">
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Floor Press</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Sets x Reps</span>
+                        <span class="detail-value">5 x 3</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Weight</span>
+                        <span class="detail-value floor-weight-85">85% Bench 1RM</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Rest</span>
+                        <span class="detail-value">4 min</span>
+                    </div>
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Push Press</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Sets x Reps</span>
+                        <span class="detail-value">4 x 3</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Weight</span>
+                        <span class="detail-value push-weight-85">85% OHP 1RM</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Rest</span>
+                        <span class="detail-value">3 min</span>
+                    </div>
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Slingshot Bench</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Sets x Reps</span>
+                        <span class="detail-value">3 x 5</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Weight</span>
+                        <span class="detail-value sling-weight-80">80% Bench 1RM</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Rest</span>
+                        <span class="detail-value">3 min</span>
+                    </div>
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">DB Bench Press</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Sets x Reps</span>
+                        <span class="detail-value">3 x 8</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Weight (each)</span>
+                        <span class="detail-value dbpress-heavy">40% Bench 1RM</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Rest</span>
+                        <span class="detail-value">2 min</span>
+                    </div>
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">JM Press</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Sets x Reps</span>
+                        <span class="detail-value">3 x 10</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Weight</span>
+                        <span class="detail-value jm-weight">30% Bench 1RM</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Rest</span>
+                        <span class="detail-value">90 sec</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Friday (Day 4) -->
+        <div class="day-card" data-week="5" data-day="4">
+            <div class="day-header">
+                <div class="day-number">FRI</div>
+                <div class="day-title">
+                    <h3>Friday - Pull Power</h3>
+                    <p>Heavy pulling focus</p>
+                </div>
+                <div class="completion-tracker">
+                    <input type="checkbox" id="w5d4-check" onchange="toggleCompletion(this)">
+                    <input type="date" id="w5d4-date">
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Deadlift</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Sets x Reps</span>
+                        <span class="detail-value">Singles: 1-1-1-1-1</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Weight</span>
+                        <span class="detail-value deadlift-weight-90">Work up to 90%</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Rest</span>
+                        <span class="detail-value">5 min</span>
+                    </div>
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Rack Pulls</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Sets x Reps</span>
+                        <span class="detail-value">3 x 3</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Weight</span>
+                        <span class="detail-value rack-weight-100">100%+ DL 1RM</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Rest</span>
+                        <span class="detail-value">4 min</span>
+                    </div>
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Pendlay Row</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Sets x Reps</span>
+                        <span class="detail-value">4 x 5</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Weight</span>
+                        <span class="detail-value pendlay-weight-80">80% Row 1RM</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Rest</span>
+                        <span class="detail-value">3 min</span>
+                    </div>
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Weighted Chin-ups</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Sets x Reps</span>
+                        <span class="detail-value">3 x 5</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Weight</span>
+                        <span class="detail-value chin-weight-75">75% Pull-up 1RM</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Rest</span>
+                        <span class="detail-value">3 min</span>
+                    </div>
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">21s Curls</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Sets x Reps</span>
+                        <span class="detail-value">3 x 21</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Weight</span>
+                        <span class="detail-value curl-21s-weight">20% Row 1RM</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Rest</span>
+                        <span class="detail-value">90 sec</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Saturday (Day 5) -->
+        <div class="day-card" data-week="5" data-day="5">
+            <div class="day-header">
+                <div class="day-number">SAT</div>
+                <div class="day-title">
+                    <h3>Saturday - Legs Power</h3>
+                    <p>Heavy leg work</p>
+                </div>
+                <div class="completion-tracker">
+                    <input type="checkbox" id="w5d5-check" onchange="toggleCompletion(this)">
+                    <input type="date" id="w5d5-date">
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Low Bar Squat</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Sets x Reps</span>
+                        <span class="detail-value">Singles: Work to 90%</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Weight</span>
+                        <span class="detail-value squat-weight-90">Up to 90% 1RM</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Rest</span>
+                        <span class="detail-value">5 min</span>
+                    </div>
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Pin Squat</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Sets x Reps</span>
+                        <span class="detail-value">3 x 3</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Weight</span>
+                        <span class="detail-value pin-weight-80">80% Squat 1RM</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Rest</span>
+                        <span class="detail-value">4 min</span>
+                    </div>
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Deficit Deadlift</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Sets x Reps</span>
+                        <span class="detail-value">3 x 3</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Weight</span>
+                        <span class="detail-value deficit-weight-70">70% DL 1RM</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Rest</span>
+                        <span class="detail-value">3 min</span>
+                    </div>
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Belt Squat</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Sets x Reps</span>
+                        <span class="detail-value">3 x 10</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Weight</span>
+                        <span class="detail-value belt-weight">100% Squat 1RM</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Rest</span>
+                        <span class="detail-value">2 min</span>
+                    </div>
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">GHR</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Sets x Reps</span>
+                        <span class="detail-value">3 x 8-10</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Weight</span>
+                        <span class="detail-value">BW/Weighted</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Rest</span>
+                        <span class="detail-value">90 sec</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sunday (Day 6) -->
+        <div class="day-card cardio-day" data-week="5" data-day="6">
+            <div class="day-header">
+                <div class="day-number">SUN</div>
+                <div class="day-title">
+                    <h3>Sunday - Active Recovery / Rowing Option</h3>
+                    <p>Very light movement (Week 6: 2k test)</p>
+                    <span class="rest-indicator">Recovery Day</span>
+                </div>
+                <div class="completion-tracker">
+                    <input type="checkbox" id="w5d6-check" onchange="toggleCompletion(this)">
+                    <input type="date" id="w5d6-date">
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Option 1: Light Movement</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Duration</span>
+                        <span class="detail-value">20-30 min</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Intensity</span>
+                        <span class="detail-value">Very Easy</span>
+                    </div>
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Option 2 (Week 6): 2k Test</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Warm-up</span>
+                        <span class="detail-value">15 min progressive</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Test</span>
+                        <span class="detail-value">2000m max effort</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Cool-down</span>
+                        <span class="detail-value">10 min easy</span>
+                    </div>
+                </div>
+            </div>
+            <div class="cardio-log">
+                <h5>Log Your Session:</h5>
+                <div class="cardio-inputs">
+                    <input type="text" placeholder="Avg Split/500m" id="w5d6-split">
+                    <input type="number" placeholder="Avg HR" id="w5d6-hr">
+                    <input type="number" placeholder="Distance (m)" id="w5d6-distance">
+                    <input type="text" placeholder="Notes" id="w5d6-notes">
+                </div>
+            </div>
+        </div>
+
+        <!-- Monday (Day 7) -->
+        <div class="day-card" data-week="5" data-day="7">
+            <div class="day-header">
+                <div class="day-number">MON</div>
+                <div class="day-title">
+                    <h3>Monday - Upper Power Peak</h3>
+                    <p>Maximum strength focus</p>
+                </div>
+                <div class="completion-tracker">
+                    <input type="checkbox" id="w5d7-check" onchange="toggleCompletion(this)">
+                    <input type="date" id="w5d7-date">
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Bench Press</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Sets x Reps</span>
+                        <span class="detail-value">5 x 3</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Weight</span>
+                        <span class="detail-value bench-weight-85">85% 1RM</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Rest</span>
+                        <span class="detail-value">4-5 min</span>
+                    </div>
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Weighted Pull-ups</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Sets x Reps</span>
+                        <span class="detail-value">4 x 3</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Weight</span>
+                        <span class="detail-value pullup-weight-80">80% 1RM</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Rest</span>
+                        <span class="detail-value">4 min</span>
+                    </div>
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Overhead Press</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Sets x Reps</span>
+                        <span class="detail-value">4 x 5</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Weight</span>
+                        <span class="detail-value ohp-weight-80">80% 1RM</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Rest</span>
+                        <span class="detail-value">3-4 min</span>
+                    </div>
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Barbell Row</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Sets x Reps</span>
+                        <span class="detail-value">4 x 5</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Weight</span>
+                        <span class="detail-value row-weight-80">80% 1RM</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Rest</span>
+                        <span class="detail-value">3 min</span>
+                    </div>
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Close-Grip Bench</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Sets x Reps</span>
+                        <span class="detail-value">3 x 6-8</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Weight</span>
+                        <span class="detail-value cgbp-weight-70">70% Bench 1RM</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Rest</span>
+                        <span class="detail-value">2 min</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="notes">
+            <h4>Week 5-6 Notes:</h4>
+            <ul>
+                <li>Peak intensity phase - singles and triples are normal</li>
+                <li>Have a spotter for heavy singles</li>
+                <li>If you miss a lift, drop weight by 10% and continue</li>
+                <li>Focus on CNS recovery - consider naps if possible</li>
+                <li>Week 6 Sunday: Perfect day for 2k test after peak week</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Week 7 -->
+    <div class="workout-container" id="week7">
+        <div class="day-card" data-week="7" data-day="all">
+            <div class="day-header">
+                <div class="day-number">ALL</div>
+                <div class="day-title">
+                    <h3>Week 7 - Deload Week</h3>
+                    <p>Recovery and supercompensation</p>
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Tuesday: Light Lower</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Exercises</span>
+                        <span class="detail-value">Squat, RDL</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Sets x Reps</span>
+                        <span class="detail-value">3 x 8-10</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Weight</span>
+                        <span class="detail-value">60-65% 1RM</span>
+                    </div>
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Wednesday: Cardio</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Activity</span>
+                        <span class="detail-value">Zone 2 cardio</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Duration</span>
+                        <span class="detail-value">30 min</span>
+                    </div>
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Thursday: Light Push</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Exercises</span>
+                        <span class="detail-value">Bench, OHP, Dips</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Sets x Reps</span>
+                        <span class="detail-value">3 x 10</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Weight</span>
+                        <span class="detail-value">60% 1RM</span>
+                    </div>
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Friday: Light Pull</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Exercises</span>
+                        <span class="detail-value">Deadlift, Row, Pull-ups</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Sets x Reps</span>
+                        <span class="detail-value">3 x 8</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Weight</span>
+                        <span class="detail-value">60% 1RM</span>
+                    </div>
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Saturday: Technique Work</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Focus</span>
+                        <span class="detail-value">Form practice</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Weight</span>
+                        <span class="detail-value">50-60% 1RM</span>
+                    </div>
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Sunday: Active Recovery</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Activities</span>
+                        <span class="detail-value">Walk, swim, yoga</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Intensity</span>
+                        <span class="detail-value">Very light</span>
+                    </div>
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Monday: Rest</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Activity</span>
+                        <span class="detail-value">Complete rest</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Focus</span>
+                        <span class="detail-value">Prepare for testing</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="notes">
+            <h4>Week 7 Deload Notes:</h4>
+            <ul>
+                <li>Critical for supercompensation - don't skip!</li>
+                <li>Focus on mobility and recovery modalities</li>
+                <li>Get massage or do extensive foam rolling</li>
+                <li>Prepare mentally for testing week</li>
+                <li>Maintain protein intake but can reduce overall calories slightly</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Week 8 -->
+    <div class="workout-container" id="week8">
+        <div class="day-card" data-week="8" data-day="1">
+            <div class="day-header">
+                <div class="day-number">TUE</div>
+                <div class="day-title">
+                    <h3>Tuesday - Squat Test</h3>
+                    <p>New 1RM test day</p>
+                </div>
+                <div class="completion-tracker">
+                    <input type="checkbox" id="w8d1-check" onchange="toggleCompletion(this)">
+                    <input type="date" id="w8d1-date">
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Warm-up Protocol</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Sets</span>
+                        <span class="detail-value">Bar x 10, 50% x 5, 70% x 3, 80% x 1, 90% x 1</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Rest</span>
+                        <span class="detail-value">4-5 min between</span>
+                    </div>
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">1RM Attempts</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Opener</span>
+                        <span class="detail-value squat-weight-95">95% current 1RM</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">2nd Attempt</span>
+                        <span class="detail-value">102-105%</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">3rd Attempt</span>
+                        <span class="detail-value">Based on 2nd</span>
+                    </div>
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Cool-down</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Activity</span>
+                        <span class="detail-value">Light leg work</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Duration</span>
+                        <span class="detail-value">10 min</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="day-card cardio-day" data-week="8" data-day="2">
+            <div class="day-header">
+                <div class="day-number">WED</div>
+                <div class="day-title">
+                    <h3>Wednesday - Active Recovery</h3>
+                    <p>Light movement between tests</p>
+                    <span class="rest-indicator">Recovery Day</span>
+                </div>
+                <div class="completion-tracker">
+                    <input type="checkbox" id="w8d2-check" onchange="toggleCompletion(this)">
+                    <input type="date" id="w8d2-date">
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Easy Movement</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Options</span>
+                        <span class="detail-value">Walk, bike, swim</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Duration</span>
+                        <span class="detail-value">20-30 min</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="day-card" data-week="8" data-day="3">
+            <div class="day-header">
+                <div class="day-number">THU</div>
+                <div class="day-title">
+                    <h3>Thursday - Bench Press Test</h3>
+                    <p>New 1RM test day</p>
+                </div>
+                <div class="completion-tracker">
+                    <input type="checkbox" id="w8d3-check" onchange="toggleCompletion(this)">
+                    <input type="date" id="w8d3-date">
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Warm-up Protocol</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Sets</span>
+                        <span class="detail-value">Bar x 10, 50% x 5, 70% x 3, 80% x 1, 90% x 1</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Rest</span>
+                        <span class="detail-value">3-5 min between</span>
+                    </div>
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">1RM Attempts</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Opener</span>
+                        <span class="detail-value bench-weight-95">95% current 1RM</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">2nd Attempt</span>
+                        <span class="detail-value">102-105%</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">3rd Attempt</span>
+                        <span class="detail-value">Based on 2nd</span>
+                    </div>
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Accessory Work</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Exercise</span>
+                        <span class="detail-value">Light tricep work</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Sets x Reps</span>
+                        <span class="detail-value">3 x 15</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="day-card" data-week="8" data-day="4">
+            <div class="day-header">
+                <div class="day-number">FRI</div>
+                <div class="day-title">
+                    <h3>Friday - Deadlift Test</h3>
+                    <p>New 1RM test day</p>
+                </div>
+                <div class="completion-tracker">
+                    <input type="checkbox" id="w8d4-check" onchange="toggleCompletion(this)">
+                    <input type="date" id="w8d4-date">
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Warm-up Protocol</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Sets</span>
+                        <span class="detail-value">135 x 5, 50% x 3, 70% x 2, 80% x 1, 90% x 1</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Rest</span>
+                        <span class="detail-value">4-5 min between</span>
+                    </div>
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">1RM Attempts</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Opener</span>
+                        <span class="detail-value deadlift-weight-95">95% current 1RM</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">2nd Attempt</span>
+                        <span class="detail-value">102-105%</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">3rd Attempt</span>
+                        <span class="detail-value">Based on 2nd</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="day-card" data-week="8" data-day="5">
+            <div class="day-header">
+                <div class="day-number">SAT</div>
+                <div class="day-title">
+                    <h3>Saturday - Optional Tests</h3>
+                    <p>Test other lifts or rest</p>
+                </div>
+                <div class="completion-tracker">
+                    <input type="checkbox" id="w8d5-check" onchange="toggleCompletion(this)">
+                    <input type="date" id="w8d5-date">
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Option 1: OHP Test</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Protocol</span>
+                        <span class="detail-value">Same as other days</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Target</span>
+                        <span class="detail-value ohp-weight-95">95%+ current 1RM</span>
+                    </div>
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Option 2: Row/Pull-up Test</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Protocol</span>
+                        <span class="detail-value">Test max weight</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Target</span>
+                        <span class="detail-value">New PRs</span>
+                    </div>
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Option 3: Rest</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Activity</span>
+                        <span class="detail-value">Complete rest</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="day-card cardio-day" data-week="8" data-day="6-7">
+            <div class="day-header">
+                <div class="day-number">SUN-MON</div>
+                <div class="day-title">
+                    <h3>Weekend - Celebration & Planning</h3>
+                    <p>Recover and plan next cycle</p>
+                    <span class="rest-indicator">Recovery Days</span>
+                </div>
+                <div class="completion-tracker">
+                    <input type="checkbox" id="w8d67-check" onchange="toggleCompletion(this)">
+                    <input type="date" id="w8d67-date">
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Sunday: Light Activity</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Options</span>
+                        <span class="detail-value">Fun activities</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Focus</span>
+                        <span class="detail-value">Enjoyment</span>
+                    </div>
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Sunday: AT Rowing Test (Optional)</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Test</span>
+                        <span class="detail-value">6k or 30min test</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Intensity</span>
+                        <span class="detail-value">Zone 3-4</span>
+                    </div>
+                </div>
+            </div>
+            <div class="cardio-log">
+                <h5>Log Your Session:</h5>
+                <div class="cardio-inputs">
+                    <input type="text" placeholder="Avg Split/500m" id="w8d67-split">
+                    <input type="number" placeholder="Avg HR" id="w8d67-hr">
+                    <input type="number" placeholder="Distance (m)" id="w8d67-distance">
+                    <input type="text" placeholder="Notes" id="w8d67-notes">
+                </div>
+            </div>
+            <div class="exercise">
+                <div class="exercise-name">Monday: Reflection & Planning</div>
+                <div class="exercise-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Review</span>
+                        <span class="detail-value">Analyze results</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Plan</span>
+                        <span class="detail-value">Next training cycle</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="notes">
+            <h4>Week 8 Testing Notes:</h4>
+            <ul>
+                <li>Have spotters for all max attempts</li>
+                <li>Don't attempt a weight unless previous felt solid</li>
+                <li>3 attempts maximum per lift - quality over quantity</li>
+                <li>Record all attempts and use for next cycle planning</li>
+                <li>Celebrate PRs but analyze missed lifts constructively</li>
+                <li>Take 3-5 days off before starting next program</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // Load saved data on page load
+        window.onload = function() {
+            loadSavedData();
+            updateWeights();
+            updateHeartRateZones();
+        };
+
+        function showWeek(weekNum) {
+            // Hide all workout containers
+            document.querySelectorAll('.workout-container').forEach(container => {
+                container.classList.remove('active');
+            });
+            
+            // Remove active class from all buttons
+            document.querySelectorAll('.week-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Show selected week
+            document.getElementById('week' + weekNum).classList.add('active');
+            
+            // Add active class to clicked button
+            event.target.classList.add('active');
+            
+            // Update weights for the selected week
+            updateWeights();
+        }
+
+        function roundToPlate(weight, increment) {
+            increment = parseFloat(increment);
+            return Math.round(weight / increment) * increment;
+        }
+
+        function updateWeights() {
+            const squat = parseFloat(document.getElementById('squat').value) || 0;
+            const bench = parseFloat(document.getElementById('bench').value) || 0;
+            const deadlift = parseFloat(document.getElementById('deadlift').value) || 0;
+            const ohp = parseFloat(document.getElementById('ohp').value) || 0;
+            const row = parseFloat(document.getElementById('row').value) || 0;
+            const pullup = parseFloat(document.getElementById('pullup').value) || 0;
+            const roundTo = parseFloat(document.getElementById('roundTo').value) || 5;
+
+            // Update all weight calculations
+            const percentages = {
+                40: 0.4, 60: 0.6, 65: 0.65, 70: 0.7, 75: 0.75, 
+                80: 0.8, 85: 0.85, 90: 0.9, 95: 0.95, 100: 1.0
+            };
+
+            // Update main lift percentages
+            for (let [percent, multiplier] of Object.entries(percentages)) {
+                updateWeight('squat-weight-' + percent, roundToPlate(squat * multiplier, roundTo));
+                updateWeight('bench-weight-' + percent, roundToPlate(bench * multiplier, roundTo));
+                updateWeight('deadlift-weight-' + percent, roundToPlate(deadlift * multiplier, roundTo));
+                updateWeight('ohp-weight-' + percent, roundToPlate(ohp * multiplier, roundTo));
+                updateWeight('row-weight-' + percent, roundToPlate(row * multiplier, roundTo));
+                updateWeight('pullup-weight-' + percent, roundToPlate(pullup * multiplier, roundTo));
+            }
+
+            // Update accessory calculations
+            // Squat-based
+            updateWeight('fsquat-weight-60', roundToPlate(squat * 0.6, roundTo));
+            updateWeight('fsquat-weight-65', roundToPlate(squat * 0.65, roundTo));
+            updateWeight('box-weight-70', roundToPlate(squat * 0.7, roundTo));
+            updateWeight('pin-weight-80', roundToPlate(squat * 0.8, roundTo));
+            updateWeight('lunge-weight', roundToPlate(squat * 0.25, roundTo));
+            updateWeight('lunge-light-weight', roundToPlate(squat * 0.15, roundTo));
+            updateWeight('bss-weight', roundToPlate(squat * 0.2, roundTo));
+            updateWeight('goblet-weight', roundToPlate(squat * 0.25, roundTo));
+            updateWeight('gm-weight-40', roundToPlate(squat * 0.4, roundTo));
+            updateWeight('calf-weight', roundToPlate(squat * 0.5, roundTo));
+            updateWeight('seated-calf-weight', roundToPlate(squat * 0.4, roundTo));
+            updateWeight('legpress-weight', roundToPlate(squat * 1.5, roundTo));
+            updateWeight('legpress-weight-heavy', roundToPlate(squat * 1.75, roundTo));
+            updateWeight('legpress-max-weight', roundToPlate(squat * 2.0, roundTo));
+            updateWeight('hack-weight', roundToPlate(squat * 1.2, roundTo));
+            updateWeight('belt-weight', roundToPlate(squat * 1.0, roundTo));
+            updateWeight('legext-weight', roundToPlate(squat * 0.3, roundTo));
+
+            // Deadlift-based
+            updateWeight('rdl-weight-65', roundToPlate(deadlift * 0.65, roundTo));
+            updateWeight('rdl-weight-70', roundToPlate(deadlift * 0.7, roundTo));
+            updateWeight('sldl-weight-60', roundToPlate(deadlift * 0.6, roundTo));
+            updateWeight('sumo-weight-75', roundToPlate(deadlift * 0.75, roundTo));
+            updateWeight('deficit-weight-70', roundToPlate(deadlift * 0.7, roundTo));
+            updateWeight('rack-weight-100', roundToPlate(deadlift * 1.1, roundTo));
+            updateWeight('slrdl-weight', roundToPlate(deadlift * 0.15, roundTo));
+
+            // Bench-based
+            updateWeight('cgbp-weight-60', roundToPlate(bench * 0.6, roundTo));
+            updateWeight('cgbp-weight-70', roundToPlate(bench * 0.7, roundTo));
+            updateWeight('incline-weight-70', roundToPlate(bench * 0.7, roundTo));
+            updateWeight('decline-weight-65', roundToPlate(bench * 0.65, roundTo));
+            updateWeight('floor-weight-85', roundToPlate(bench * 0.85, roundTo));
+            updateWeight('sling-weight-80', roundToPlate(bench * 0.8, roundTo));
+            updateWeight('incdb-weight', roundToPlate(bench * 0.35, roundTo));
+            updateWeight('dbpress-heavy', roundToPlate(bench * 0.4, roundTo));
+            updateWeight('fly-weight', roundToPlate(bench * 0.15, roundTo));
+            updateWeight('tri-weight', roundToPlate(bench * 0.2, roundTo));
+            updateWeight('overhead-tri-weight', roundToPlate(bench * 0.25, roundTo));
+            updateWeight('jm-weight', roundToPlate(bench * 0.3, roundTo));
+            updateWeight('dip-weight', 'BW + ' + roundToPlate(bench * 0.1, roundTo));
+            updateWeight('dip-weight-heavy', 'BW + ' + roundToPlate(bench * 0.15, roundTo));
+
+            // OHP-based
+            updateWeight('dbohp-weight', roundToPlate(ohp * 0.35, roundTo));
+            updateWeight('dbohp-weight-heavy', roundToPlate(ohp * 0.4, roundTo));
+            updateWeight('arnold-weight', roundToPlate(ohp * 0.3, roundTo));
+            updateWeight('lat-weight', roundToPlate(ohp * 0.1, roundTo));
+            updateWeight('raise-weight', roundToPlate(ohp * 0.12, roundTo));
+            updateWeight('push-weight-85', roundToPlate(ohp * 0.85, roundTo));
+
+            // Row-based
+            updateWeight('tbar-weight', roundToPlate(row * 0.7, roundTo));
+            updateWeight('cable-row-weight', roundToPlate(row * 0.65, roundTo));
+            updateWeight('dbrow-weight', roundToPlate(row * 0.4, roundTo));
+            updateWeight('pendlay-weight-80', roundToPlate(row * 0.8, roundTo));
+            updateWeight('curl-weight', roundToPlate(row * 0.3, roundTo));
+            updateWeight('hammer-weight', roundToPlate(row * 0.12, roundTo));
+            updateWeight('preacher-weight', roundToPlate(row * 0.35, roundTo));
+            updateWeight('cable-curl-weight', roundToPlate(row * 0.25, roundTo));
+            updateWeight('curl-21s-weight', roundToPlate(row * 0.2, roundTo));
+            updateWeight('face-weight', roundToPlate(row * 0.15, roundTo));
+
+            // Pull-up based
+            updateWeight('lat-pd-weight', roundToPlate(pullup * 0.6, roundTo));
+            updateWeight('wide-pd-weight', roundToPlate(pullup * 0.65, roundTo));
+            updateWeight('chin-weight-75', roundToPlate(pullup * 0.75, roundTo));
+
+            // Update reference displays
+            document.getElementById('incline-ref').value = roundToPlate(bench * 0.85, roundTo) + ' lbs';
+            document.getElementById('cgbp-ref').value = roundToPlate(bench * 0.8, roundTo) + ' lbs';
+            document.getElementById('dbpress-ref').value = roundToPlate(bench * 0.7, roundTo) + ' lbs';
+            document.getElementById('fsquat-ref').value = roundToPlate(squat * 0.8, roundTo) + ' lbs';
+            document.getElementById('rdl-ref').value = roundToPlate(deadlift * 0.7, roundTo) + ' lbs';
+            document.getElementById('dbrow-ref').value = roundToPlate(row * 0.4, roundTo) + ' lbs';
+
+            // Save to localStorage
+            saveData();
+        }
+
+        function updateWeight(className, value) {
+            const elements = document.getElementsByClassName(className);
+            for (let element of elements) {
+                if (typeof value === 'number') {
+                    element.textContent = value + ' lbs';
+                } else {
+                    element.textContent = value + ' lbs';
+                }
+            }
+        }
+
+        function updateHeartRateZones() {
+            const maxHR = parseFloat(document.getElementById('maxHR').value) || 190;
+            
+            // Calculate zones
+            const zone2Low = Math.round(maxHR * 0.65);
+            const zone2High = Math.round(maxHR * 0.75);
+            const zone3Low = Math.round(maxHR * 0.75);
+            const zone3High = Math.round(maxHR * 0.85);
+            const zone4Low = Math.round(maxHR * 0.85);
+            const zone4High = Math.round(maxHR * 0.90);
+            
+            // Update display
+            document.querySelectorAll('.hr-zone-2').forEach(el => {
+                el.textContent = `${zone2Low}-${zone2High} bpm`;
+            });
+            document.querySelectorAll('.hr-zone-3').forEach(el => {
+                el.textContent = `${zone3Low}-${zone3High} bpm`;
+            });
+            document.querySelectorAll('.hr-zone-4').forEach(el => {
+                el.textContent = `${zone4Low}-${zone4High} bpm`;
+            });
+        }
+
+        function toggleCompletion(checkbox) {
+            const dayCard = checkbox.closest('.day-card');
+            const dateInput = checkbox.nextElementSibling;
+            
+            if (checkbox.checked) {
+                dayCard.classList.add('completed');
+                if (!dateInput.value) {
+                    dateInput.value = new Date().toISOString().split('T')[0];
+                }
+            } else {
+                dayCard.classList.remove('completed');
+            }
+            
+            saveData();
+        }
+
+        function saveData() {
+            const data = {
+                // Save 1RMs and settings
+                squat: document.getElementById('squat').value,
+                bench: document.getElementById('bench').value,
+                deadlift: document.getElementById('deadlift').value,
+                ohp: document.getElementById('ohp').value,
+                row: document.getElementById('row').value,
+                pullup: document.getElementById('pullup').value,
+                maxHR: document.getElementById('maxHR').value,
+                roundTo: document.getElementById('roundTo').value,
+                
+                // Save completion status
+                completions: {},
+                cardioLogs: {}
+            };
+            
+            // Save all checkbox states and dates
+            document.querySelectorAll('.completion-tracker input[type="checkbox"]').forEach(cb => {
+                data.completions[cb.id] = {
+                    checked: cb.checked,
+                    date: cb.nextElementSibling.value
+                };
+            });
+            
+            // Save cardio logs
+            document.querySelectorAll('.cardio-inputs').forEach(log => {
+                const inputs = log.querySelectorAll('input');
+                if (inputs.length >= 4) {
+                    const logId = inputs[0].id.split('-').slice(0, 2).join('-');
+                    data.cardioLogs[logId] = {
+                        split: inputs[0].value,
+                        hr: inputs[1].value,
+                        distance: inputs[2].value,
+                        notes: inputs[3].value
+                    };
+                }
+            });
+            
+            localStorage.setItem('workoutPlanData', JSON.stringify(data));
+        }
+
+        function loadSavedData() {
+            const saved = localStorage.getItem('workoutPlanData');
+            if (!saved) return;
+            
+            const data = JSON.parse(saved);
+            
+            // Load 1RMs and settings
+            if (data.squat) document.getElementById('squat').value = data.squat;
+            if (data.bench) document.getElementById('bench').value = data.bench;
+            if (data.deadlift) document.getElementById('deadlift').value = data.deadlift;
+            if (data.ohp) document.getElementById('ohp').value = data.ohp;
+            if (data.row) document.getElementById('row').value = data.row;
+            if (data.pullup) document.getElementById('pullup').value = data.pullup;
+            if (data.maxHR) document.getElementById('maxHR').value = data.maxHR;
+            if (data.roundTo) document.getElementById('roundTo').value = data.roundTo;
+            
+            // Load completions
+            if (data.completions) {
+                Object.entries(data.completions).forEach(([id, info]) => {
+                    const checkbox = document.getElementById(id);
+                    if (checkbox) {
+                        checkbox.checked = info.checked;
+                        checkbox.nextElementSibling.value = info.date || '';
+                        if (info.checked) {
+                            checkbox.closest('.day-card').classList.add('completed');
+                        }
+                    }
+                });
+            }
+            
+            // Load cardio logs
+            if (data.cardioLogs) {
+                Object.entries(data.cardioLogs).forEach(([logId, values]) => {
+                    const splitInput = document.getElementById(logId + '-split');
+                    const hrInput = document.getElementById(logId + '-hr');
+                    const distanceInput = document.getElementById(logId + '-distance');
+                    const notesInput = document.getElementById(logId + '-notes');
+                    
+                    if (splitInput && values.split) splitInput.value = values.split;
+                    if (hrInput && values.hr) hrInput.value = values.hr;
+                    if (distanceInput && values.distance) distanceInput.value = values.distance;
+                    if (notesInput && values.notes) notesInput.value = values.notes;
+                });
+            }
+        }
+
+        // Add event listeners to inputs
+        document.querySelectorAll('input[type="number"]').forEach(input => {
+            input.addEventListener('input', updateWeights);
+        });
+
+        document.getElementById('maxHR').addEventListener('input', updateHeartRateZones);
+        document.getElementById('roundTo').addEventListener('change', updateWeights);
+
+        // Save cardio logs when modified
+        document.querySelectorAll('.cardio-inputs input').forEach(input => {
+            input.addEventListener('input', saveData);
+        });
+
+        // Progress Tracking Functions
+        let strengthChart, completionChart, cardioChart, volumeChart;
+
+        function showProgressTracking() {
+            // Hide all workout containers
+            document.querySelectorAll('.workout-container').forEach(container => {
+                container.classList.remove('active');
+            });
+            
+            // Show progress container
+            document.getElementById('progressContainer').style.display = 'block';
+            
+            // Remove active class from all buttons
+            document.querySelectorAll('.week-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Add active class to progress button
+            event.target.classList.add('active');
+            
+            // Initialize charts and update data
+            setTimeout(() => {
+                initializeCharts();
+                updateProgressSummary();
+            }, 100);
+        }
+
+        function hideProgressTracking() {
+            document.getElementById('progressContainer').style.display = 'none';
+        }
+
+        function initializeCharts() {
+            // Get historical data
+            const rmHistory = getRMHistory();
+            const completionData = getCompletionData();
+            const cardioData = getCardioData();
+            
+            // Initialize strength progress chart
+            if (strengthChart) strengthChart.destroy();
+            const strengthCtx = document.getElementById('strengthChart').getContext('2d');
+            strengthChart = new Chart(strengthCtx, {
+                type: 'line',
+                data: {
+                    labels: rmHistory.dates,
+                    datasets: [
+                        {
+                            label: 'Squat',
+                            data: rmHistory.squat,
+                            borderColor: '#ff6384',
+                            backgroundColor: 'rgba(255, 99, 132, 0.1)',
+                            tension: 0.4
+                        },
+                        {
+                            label: 'Bench',
+                            data: rmHistory.bench,
+                            borderColor: '#36a2eb',
+                            backgroundColor: 'rgba(54, 162, 235, 0.1)',
+                            tension: 0.4
+                        },
+                        {
+                            label: 'Deadlift',
+                            data: rmHistory.deadlift,
+                            borderColor: '#4bc0c0',
+                            backgroundColor: 'rgba(75, 192, 192, 0.1)',
+                            tension: 0.4
+                        },
+                        {
+                            label: 'OHP',
+                            data: rmHistory.ohp,
+                            borderColor: '#ff9f40',
+                            backgroundColor: 'rgba(255, 159, 64, 0.1)',
+                            tension: 0.4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            title: {
+                                display: true,
+                                text: 'Weight (lbs)'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Date'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: true
+                        },
+                        title: {
+                            display: true,
+                            text: '1RM Progress Over Time'
+                        }
+                    }
+                }
+            });
+
+            // Initialize completion rate chart
+            if (completionChart) completionChart.destroy();
+            const completionCtx = document.getElementById('completionChart').getContext('2d');
+            completionChart = new Chart(completionCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Completed', 'Remaining'],
+                    datasets: [{
+                        data: [completionData.completed, completionData.total - completionData.completed],
+                        backgroundColor: ['#4caf50', '#e0e0e0'],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        },
+                        title: {
+                            display: true,
+                            text: `${Math.round(completionData.completed / completionData.total * 100)}% Complete`
+                        }
+                    }
+                }
+            });
+
+            // Initialize cardio performance chart
+            if (cardioChart) cardioChart.destroy();
+            const cardioCtx = document.getElementById('cardioChart').getContext('2d');
+            cardioChart = new Chart(cardioCtx, {
+                type: 'line',
+                data: {
+                    labels: cardioData.dates,
+                    datasets: [
+                        {
+                            label: 'Avg Split (sec/500m)',
+                            data: cardioData.splits,
+                            borderColor: '#9c27b0',
+                            backgroundColor: 'rgba(156, 39, 176, 0.1)',
+                            tension: 0.4,
+                            yAxisID: 'y'
+                        },
+                        {
+                            label: 'Avg HR (bpm)',
+                            data: cardioData.heartRates,
+                            borderColor: '#f44336',
+                            backgroundColor: 'rgba(244, 67, 54, 0.1)',
+                            tension: 0.4,
+                            yAxisID: 'y1'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            title: {
+                                display: true,
+                                text: 'Split (sec/500m)'
+                            }
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            title: {
+                                display: true,
+                                text: 'Heart Rate (bpm)'
+                            },
+                            grid: {
+                                drawOnChartArea: false,
+                            },
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Cardio Performance Trends'
+                        }
+                    }
+                }
+            });
+
+            // Initialize volume chart
+            if (volumeChart) volumeChart.destroy();
+            const volumeCtx = document.getElementById('volumeChart').getContext('2d');
+            const volumeData = getVolumeData();
+            volumeChart = new Chart(volumeCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6', 'Week 7', 'Week 8'],
+                    datasets: [{
+                        label: 'Estimated Volume (1000s lbs)',
+                        data: volumeData,
+                        backgroundColor: 'rgba(103, 126, 234, 0.8)',
+                        borderColor: '#667eea',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Volume (1000s lbs)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Weekly Training Volume'
+                        }
+                    }
+                }
+            });
+        }
+
+        function getRMHistory() {
+            const saved = localStorage.getItem('rmHistory');
+            if (!saved) {
+                return {
+                    dates: [],
+                    squat: [],
+                    bench: [],
+                    deadlift: [],
+                    ohp: []
+                };
+            }
+            return JSON.parse(saved);
+        }
+
+        function getCompletionData() {
+            const saved = localStorage.getItem('workoutPlanData');
+            if (!saved) return { completed: 0, total: 48 }; // Roughly 48 workouts in 8 weeks
+            
+            const data = JSON.parse(saved);
+            let completed = 0;
+            if (data.completions) {
+                Object.values(data.completions).forEach(completion => {
+                    if (completion.checked) completed++;
+                });
+            }
+            
+            return { completed, total: 48 };
+        }
+
+        function getCardioData() {
+            const saved = localStorage.getItem('workoutPlanData');
+            if (!saved) return { dates: [], splits: [], heartRates: [] };
+            
+            const data = JSON.parse(saved);
+            const dates = [];
+            const splits = [];
+            const heartRates = [];
+            
+            if (data.cardioLogs) {
+                Object.entries(data.cardioLogs).forEach(([key, log]) => {
+                    if (log.split && log.hr && data.completions[key + '-check']?.date) {
+                        dates.push(data.completions[key + '-check'].date);
+                        
+                        // Convert split to seconds (assuming format like "2:15.0")
+                        const splitParts = log.split.split(':');
+                        if (splitParts.length === 2) {
+                            const minutes = parseInt(splitParts[0]) || 0;
+                            const seconds = parseFloat(splitParts[1]) || 0;
+                            splits.push(minutes * 60 + seconds);
+                        } else {
+                            splits.push(parseFloat(log.split) || 0);
+                        }
+                        
+                        heartRates.push(parseInt(log.hr) || 0);
+                    }
+                });
+            }
+            
+            return { dates, splits, heartRates };
+        }
+
+        function getVolumeData() {
+            // Estimate weekly volume based on program structure
+            const squat = parseFloat(document.getElementById('squat').value) || 315;
+            const bench = parseFloat(document.getElementById('bench').value) || 225;
+            const deadlift = parseFloat(document.getElementById('deadlift').value) || 405;
+            const ohp = parseFloat(document.getElementById('ohp').value) || 135;
+            
+            // Rough volume estimates per week (in thousands of pounds)
+            const baseVolume = (squat * 20 + bench * 25 + deadlift * 15 + ohp * 20) / 1000;
+            
+            return [
+                baseVolume * 0.8,  // Week 1 (Foundation)
+                baseVolume * 0.85, // Week 2 (Foundation)
+                baseVolume * 0.9,  // Week 3 (Intensification)
+                baseVolume * 0.95, // Week 4 (Intensification)
+                baseVolume * 0.7,  // Week 5 (Peak - lower volume)
+                baseVolume * 0.65, // Week 6 (Peak - lower volume)
+                baseVolume * 0.4,  // Week 7 (Deload)
+                baseVolume * 0.5   // Week 8 (Testing)
+            ];
+        }
+
+        function updateProgressSummary() {
+            const completionData = getCompletionData();
+            const rmHistory = getRMHistory();
+            const volumeData = getVolumeData();
+            
+            // Update summary cards
+            document.getElementById('totalWorkouts').textContent = completionData.completed;
+            document.getElementById('completionRate').textContent = 
+                Math.round(completionData.completed / completionData.total * 100) + '%';
+            
+            // Find strongest lift
+            const currentLifts = {
+                'Squat': parseFloat(document.getElementById('squat').value) || 0,
+                'Bench': parseFloat(document.getElementById('bench').value) || 0,
+                'Deadlift': parseFloat(document.getElementById('deadlift').value) || 0,
+                'OHP': parseFloat(document.getElementById('ohp').value) || 0
+            };
+            
+            const strongestLift = Object.entries(currentLifts).reduce((a, b) => 
+                currentLifts[a[0]] > currentLifts[b[0]] ? a : b
+            );
+            
+            document.getElementById('strongestLift').textContent = 
+                `${strongestLift[0]}: ${strongestLift[1]}lbs`;
+            
+            // Calculate total volume
+            const totalVolume = Math.round(volumeData.reduce((a, b) => a + b, 0) * 1000);
+            document.getElementById('totalVolume').textContent = totalVolume.toLocaleString();
+        }
+
+        function saveRMProgress() {
+            const date = document.getElementById('rmDate').value;
+            const squat = parseFloat(document.getElementById('rmSquat').value);
+            const bench = parseFloat(document.getElementById('rmBench').value);
+            const deadlift = parseFloat(document.getElementById('rmDeadlift').value);
+            const ohp = parseFloat(document.getElementById('rmOHP').value);
+            
+            if (!date || (!squat && !bench && !deadlift && !ohp)) {
+                alert('Please enter a date and at least one 1RM value.');
+                return;
+            }
+            
+            let rmHistory = getRMHistory();
+            
+            // Add new data point
+            rmHistory.dates.push(date);
+            rmHistory.squat.push(squat || null);
+            rmHistory.bench.push(bench || null);
+            rmHistory.deadlift.push(deadlift || null);
+            rmHistory.ohp.push(ohp || null);
+            
+            // Save to localStorage
+            localStorage.setItem('rmHistory', JSON.stringify(rmHistory));
+            
+            // Update current 1RMs if provided
+            if (squat) document.getElementById('squat').value = squat;
+            if (bench) document.getElementById('bench').value = bench;
+            if (deadlift) document.getElementById('deadlift').value = deadlift;
+            if (ohp) document.getElementById('ohp').value = ohp;
+            
+            // Update weights and charts
+            updateWeights();
+            initializeCharts();
+            updateProgressSummary();
+            
+            // Clear form
+            document.getElementById('rmDate').value = '';
+            document.getElementById('rmSquat').value = '';
+            document.getElementById('rmBench').value = '';
+            document.getElementById('rmDeadlift').value = '';
+            document.getElementById('rmOHP').value = '';
+            
+            alert('Progress saved successfully!');
+        }
+
+        function exportData() {
+            const workoutData = localStorage.getItem('workoutPlanData');
+            const rmHistory = localStorage.getItem('rmHistory');
+            
+            const exportData = {
+                workoutData: workoutData ? JSON.parse(workoutData) : null,
+                rmHistory: rmHistory ? JSON.parse(rmHistory) : null,
+                exportDate: new Date().toISOString()
+            };
+            
+            const dataStr = JSON.stringify(exportData, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(dataBlob);
+            link.download = `workout-data-${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+        }
+
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    
+                    if (importedData.workoutData) {
+                        localStorage.setItem('workoutPlanData', JSON.stringify(importedData.workoutData));
+                    }
+                    
+                    if (importedData.rmHistory) {
+                        localStorage.setItem('rmHistory', JSON.stringify(importedData.rmHistory));
+                    }
+                    
+                    // Reload page to reflect imported data
+                    location.reload();
+                } catch (error) {
+                    alert('Error importing data. Please check the file format.');
+                    console.error('Import error:', error);
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function resetData() {
+            if (confirm('Are you sure you want to reset ALL data? This cannot be undone.')) {
+                localStorage.removeItem('workoutPlanData');
+                localStorage.removeItem('rmHistory');
+                location.reload();
+            }
+        }
+
+        // Set default date to today
+        document.getElementById('rmDate').value = new Date().toISOString().split('T')[0];
+
+        // Hide progress tracking when showing weeks
+        function showWeek(weekNum) {
+            hideProgressTracking();
+            
+            // Hide all workout containers
+            document.querySelectorAll('.workout-container').forEach(container => {
+                container.classList.remove('active');
+            });
+            
+            // Remove active class from all buttons
+            document.querySelectorAll('.week-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Show selected week
+            document.getElementById('week' + weekNum).classList.add('active');
+            
+            // Add active class to clicked button
+            event.target.classList.add('active');
+            
+            // Update weights for the selected week
+            updateWeights();
+        }
+    </script>
+</body>
+</html>
