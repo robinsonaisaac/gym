@@ -519,28 +519,28 @@
         <h2>1RM Calculator & Settings</h2>
         <div class="input-grid">
             <div class="input-group">
-                <label for="squat">Squat 1RM (lbs/kg)</label>
-                <input type="number" id="squat" placeholder="315" value="315">
+                <label for="squat">Squat 1RM (kg)</label>
+                <input type="number" id="squat" placeholder="143" value="143" step="0.5">
             </div>
             <div class="input-group">
-                <label for="bench">Bench Press 1RM</label>
-                <input type="number" id="bench" placeholder="225" value="225">
+                <label for="bench">Bench Press 1RM (kg)</label>
+                <input type="number" id="bench" placeholder="102" value="102" step="0.5">
             </div>
             <div class="input-group">
-                <label for="deadlift">Deadlift 1RM</label>
-                <input type="number" id="deadlift" placeholder="405" value="405">
+                <label for="deadlift">Deadlift 1RM (kg)</label>
+                <input type="number" id="deadlift" placeholder="184" value="184" step="0.5">
             </div>
             <div class="input-group">
-                <label for="ohp">Overhead Press 1RM</label>
-                <input type="number" id="ohp" placeholder="135" value="135">
+                <label for="ohp">Overhead Press 1RM (kg)</label>
+                <input type="number" id="ohp" placeholder="61" value="61" step="0.5">
             </div>
             <div class="input-group">
-                <label for="row">Barbell Row 1RM</label>
-                <input type="number" id="row" placeholder="185" value="185">
+                <label for="row">Barbell Row 1RM (kg)</label>
+                <input type="number" id="row" placeholder="84" value="84" step="0.5">
             </div>
             <div class="input-group">
-                <label for="pullup">Pull-up 1RM (BW + Added)</label>
-                <input type="number" id="pullup" placeholder="225" value="225">
+                <label for="pullup">Pull-up 1RM (BW + Added kg)</label>
+                <input type="number" id="pullup" placeholder="102" value="102" step="0.5">
             </div>
             <div class="input-group">
                 <label for="maxHR">Max Heart Rate</label>
@@ -549,9 +549,9 @@
             <div class="input-group">
                 <label for="roundTo">Round Weights To</label>
                 <select id="roundTo">
-                    <option value="2.5">2.5 lbs</option>
-                    <option value="5" selected>5 lbs</option>
-                    <option value="10">10 lbs</option>
+                    <option value="1.25">1.25 kg</option>
+                    <option value="2.5" selected>2.5 kg</option>
+                    <option value="5">5 kg</option>
                 </select>
             </div>
         </div>
@@ -560,27 +560,27 @@
             <h3>Additional Exercise References (Auto-calculated)</h3>
             <div class="input-grid">
                 <div class="input-group">
-                    <label>Incline Press</label>
+                    <label>Incline Press (kg)</label>
                     <input type="text" id="incline-ref" readonly value="85% of Bench">
                 </div>
                 <div class="input-group">
-                    <label>Close-Grip Bench</label>
+                    <label>Close-Grip Bench (kg)</label>
                     <input type="text" id="cgbp-ref" readonly value="80% of Bench">
                 </div>
                 <div class="input-group">
-                    <label>DB Press (total)</label>
+                    <label>DB Press Total (kg)</label>
                     <input type="text" id="dbpress-ref" readonly value="70% of Bench">
                 </div>
                 <div class="input-group">
-                    <label>Front Squat</label>
+                    <label>Front Squat (kg)</label>
                     <input type="text" id="fsquat-ref" readonly value="80% of Squat">
                 </div>
                 <div class="input-group">
-                    <label>RDL/SLDL</label>
+                    <label>RDL/SLDL (kg)</label>
                     <input type="text" id="rdl-ref" readonly value="70% of Deadlift">
                 </div>
                 <div class="input-group">
-                    <label>DB Row (each)</label>
+                    <label>DB Row Each (kg)</label>
                     <input type="text" id="dbrow-ref" readonly value="40% of BB Row">
                 </div>
             </div>
@@ -650,7 +650,7 @@
                 <div class="summary-card">
                     <h4>Total Volume</h4>
                     <div class="summary-value" id="totalVolume">0</div>
-                    <div class="summary-subtext">lbs lifted</div>
+                    <div class="summary-subtext">kg lifted</div>
                 </div>
             </div>
         </div>
@@ -664,20 +664,20 @@
                     <input type="date" id="rmDate" value="">
                 </div>
                 <div class="rm-input-group">
-                    <label>Squat 1RM:</label>
-                    <input type="number" id="rmSquat" placeholder="315">
+                    <label>Squat 1RM (kg):</label>
+                    <input type="number" id="rmSquat" placeholder="143" step="0.5">
                 </div>
                 <div class="rm-input-group">
-                    <label>Bench 1RM:</label>
-                    <input type="number" id="rmBench" placeholder="225">
+                    <label>Bench 1RM (kg):</label>
+                    <input type="number" id="rmBench" placeholder="102" step="0.5">
                 </div>
                 <div class="rm-input-group">
-                    <label>Deadlift 1RM:</label>
-                    <input type="number" id="rmDeadlift" placeholder="405">
+                    <label>Deadlift 1RM (kg):</label>
+                    <input type="number" id="rmDeadlift" placeholder="184" step="0.5">
                 </div>
                 <div class="rm-input-group">
-                    <label>OHP 1RM:</label>
-                    <input type="number" id="rmOHP" placeholder="135">
+                    <label>OHP 1RM (kg):</label>
+                    <input type="number" id="rmOHP" placeholder="61" step="0.5">
                 </div>
                 <button onclick="saveRMProgress()" class="save-rm-btn">💾 Save Progress</button>
             </div>
@@ -3186,13 +3186,13 @@
         }
 
         function updateWeights() {
-            const squat = parseFloat(document.getElementById('squat').value) || 0;
-            const bench = parseFloat(document.getElementById('bench').value) || 0;
-            const deadlift = parseFloat(document.getElementById('deadlift').value) || 0;
-            const ohp = parseFloat(document.getElementById('ohp').value) || 0;
-            const row = parseFloat(document.getElementById('row').value) || 0;
-            const pullup = parseFloat(document.getElementById('pullup').value) || 0;
-            const roundTo = parseFloat(document.getElementById('roundTo').value) || 5;
+            const squat = parseFloat(document.getElementById('squat').value) || 143;
+            const bench = parseFloat(document.getElementById('bench').value) || 102;
+            const deadlift = parseFloat(document.getElementById('deadlift').value) || 184;
+            const ohp = parseFloat(document.getElementById('ohp').value) || 61;
+            const row = parseFloat(document.getElementById('row').value) || 84;
+            const pullup = parseFloat(document.getElementById('pullup').value) || 102;
+            const roundTo = parseFloat(document.getElementById('roundTo').value) || 2.5;
 
             // Update all weight calculations
             const percentages = {
@@ -3281,12 +3281,12 @@
             updateWeight('chin-weight-75', roundToPlate(pullup * 0.75, roundTo));
 
             // Update reference displays
-            document.getElementById('incline-ref').value = roundToPlate(bench * 0.85, roundTo) + ' lbs';
-            document.getElementById('cgbp-ref').value = roundToPlate(bench * 0.8, roundTo) + ' lbs';
-            document.getElementById('dbpress-ref').value = roundToPlate(bench * 0.7, roundTo) + ' lbs';
-            document.getElementById('fsquat-ref').value = roundToPlate(squat * 0.8, roundTo) + ' lbs';
-            document.getElementById('rdl-ref').value = roundToPlate(deadlift * 0.7, roundTo) + ' lbs';
-            document.getElementById('dbrow-ref').value = roundToPlate(row * 0.4, roundTo) + ' lbs';
+            document.getElementById('incline-ref').value = roundToPlate(bench * 0.85, roundTo) + ' kg';
+            document.getElementById('cgbp-ref').value = roundToPlate(bench * 0.8, roundTo) + ' kg';
+            document.getElementById('dbpress-ref').value = roundToPlate(bench * 0.7, roundTo) + ' kg';
+            document.getElementById('fsquat-ref').value = roundToPlate(squat * 0.8, roundTo) + ' kg';
+            document.getElementById('rdl-ref').value = roundToPlate(deadlift * 0.7, roundTo) + ' kg';
+            document.getElementById('dbrow-ref').value = roundToPlate(row * 0.4, roundTo) + ' kg';
 
             // Save to localStorage
             saveData();
@@ -3296,9 +3296,9 @@
             const elements = document.getElementsByClassName(className);
             for (let element of elements) {
                 if (typeof value === 'number') {
-                    element.textContent = value + ' lbs';
+                    element.textContent = value + ' kg';
                 } else {
-                    element.textContent = value + ' lbs';
+                    element.textContent = value + ' kg';
                 }
             }
         }
@@ -3337,58 +3337,76 @@
                 }
             } else {
                 dayCard.classList.remove('completed');
+                dateInput.value = '';
             }
             
+            // Immediate save to ensure data persistence
             saveData();
+            
+            // Update progress if on progress page
+            if (document.getElementById('progressContainer').style.display !== 'none') {
+                updateProgressSummary();
+                initializeCharts();
+            }
         }
 
         function saveData() {
-            const data = {
-                // Save 1RMs and settings
-                squat: document.getElementById('squat').value,
-                bench: document.getElementById('bench').value,
-                deadlift: document.getElementById('deadlift').value,
-                ohp: document.getElementById('ohp').value,
-                row: document.getElementById('row').value,
-                pullup: document.getElementById('pullup').value,
-                maxHR: document.getElementById('maxHR').value,
-                roundTo: document.getElementById('roundTo').value,
-                
-                // Save completion status
-                completions: {},
-                cardioLogs: {}
-            };
+            try {
+                const data = {
+                    // Save 1RMs and settings
+                    squat: document.getElementById('squat').value,
+                    bench: document.getElementById('bench').value,
+                    deadlift: document.getElementById('deadlift').value,
+                    ohp: document.getElementById('ohp').value,
+                    row: document.getElementById('row').value,
+                    pullup: document.getElementById('pullup').value,
+                    maxHR: document.getElementById('maxHR').value,
+                    roundTo: document.getElementById('roundTo').value,
+                    
+                    // Save completion status
+                    completions: {},
+                    cardioLogs: {},
+                    
+                    // Add timestamp for tracking
+                    lastSaved: new Date().toISOString()
+                };
             
             // Save all checkbox states and dates
             document.querySelectorAll('.completion-tracker input[type="checkbox"]').forEach(cb => {
+                const dateInput = cb.nextElementSibling;
                 data.completions[cb.id] = {
                     checked: cb.checked,
-                    date: cb.nextElementSibling.value
+                    date: dateInput ? dateInput.value : ''
                 };
             });
             
-            // Save cardio logs
+            // Save cardio logs - iterate through all cardio input containers
             document.querySelectorAll('.cardio-inputs').forEach(log => {
                 const inputs = log.querySelectorAll('input');
                 if (inputs.length >= 4) {
                     const logId = inputs[0].id.split('-').slice(0, 2).join('-');
                     data.cardioLogs[logId] = {
-                        split: inputs[0].value,
-                        hr: inputs[1].value,
-                        distance: inputs[2].value,
-                        notes: inputs[3].value
+                        split: inputs[0].value || '',
+                        hr: inputs[1].value || '',
+                        distance: inputs[2].value || '',
+                        notes: inputs[3].value || ''
                     };
                 }
             });
             
-            localStorage.setItem('workoutPlanData', JSON.stringify(data));
+                localStorage.setItem('workoutPlanData', JSON.stringify(data));
+            } catch (error) {
+                console.error('Error saving data:', error);
+                // Could show user notification here if needed
+            }
         }
 
         function loadSavedData() {
-            const saved = localStorage.getItem('workoutPlanData');
-            if (!saved) return;
-            
-            const data = JSON.parse(saved);
+            try {
+                const saved = localStorage.getItem('workoutPlanData');
+                if (!saved) return;
+                
+                const data = JSON.parse(saved);
             
             // Load 1RMs and settings
             if (data.squat) document.getElementById('squat').value = data.squat;
@@ -3405,10 +3423,16 @@
                 Object.entries(data.completions).forEach(([id, info]) => {
                     const checkbox = document.getElementById(id);
                     if (checkbox) {
-                        checkbox.checked = info.checked;
-                        checkbox.nextElementSibling.value = info.date || '';
+                        checkbox.checked = info.checked || false;
+                        const dateInput = checkbox.nextElementSibling;
+                        if (dateInput) {
+                            dateInput.value = info.date || '';
+                        }
                         if (info.checked) {
-                            checkbox.closest('.day-card').classList.add('completed');
+                            const dayCard = checkbox.closest('.day-card');
+                            if (dayCard) {
+                                dayCard.classList.add('completed');
+                            }
                         }
                     }
                 });
@@ -3422,11 +3446,15 @@
                     const distanceInput = document.getElementById(logId + '-distance');
                     const notesInput = document.getElementById(logId + '-notes');
                     
-                    if (splitInput && values.split) splitInput.value = values.split;
-                    if (hrInput && values.hr) hrInput.value = values.hr;
-                    if (distanceInput && values.distance) distanceInput.value = values.distance;
-                    if (notesInput && values.notes) notesInput.value = values.notes;
+                    if (splitInput) splitInput.value = values.split || '';
+                    if (hrInput) hrInput.value = values.hr || '';
+                    if (distanceInput) distanceInput.value = values.distance || '';
+                    if (notesInput) notesInput.value = values.notes || '';
                 });
+            }
+            } catch (error) {
+                console.error('Error loading saved data:', error);
+                // Could show user notification here if needed
             }
         }
 
@@ -3440,7 +3468,19 @@
 
         // Save cardio logs when modified
         document.querySelectorAll('.cardio-inputs input').forEach(input => {
-            input.addEventListener('input', saveData);
+            input.addEventListener('input', function() {
+                saveData();
+                // Optional: Add visual feedback
+                this.style.borderColor = '#4caf50';
+                setTimeout(() => {
+                    this.style.borderColor = '';
+                }, 500);
+            });
+        });
+
+        // Also save when date inputs change
+        document.querySelectorAll('.completion-tracker input[type="date"]').forEach(input => {
+            input.addEventListener('change', saveData);
         });
 
         // Progress Tracking Functions
@@ -3525,7 +3565,7 @@
                             beginAtZero: false,
                             title: {
                                 display: true,
-                                text: 'Weight (lbs)'
+                                text: 'Weight (kg)'
                             }
                         },
                         x: {
@@ -3643,7 +3683,7 @@
                 data: {
                     labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6', 'Week 7', 'Week 8'],
                     datasets: [{
-                        label: 'Estimated Volume (1000s lbs)',
+                        label: 'Estimated Volume (1000s kg)',
                         data: volumeData,
                         backgroundColor: 'rgba(103, 126, 234, 0.8)',
                         borderColor: '#667eea',
@@ -3657,7 +3697,7 @@
                             beginAtZero: true,
                             title: {
                                 display: true,
-                                text: 'Volume (1000s lbs)'
+                                text: 'Volume (1000s kg)'
                             }
                         }
                     },
@@ -3686,8 +3726,12 @@
         }
 
         function getCompletionData() {
+            // Count actual workout checkboxes in DOM
+            const allCheckboxes = document.querySelectorAll('.completion-tracker input[type="checkbox"]');
+            const totalWorkouts = allCheckboxes.length;
+            
             const saved = localStorage.getItem('workoutPlanData');
-            if (!saved) return { completed: 0, total: 48 }; // Roughly 48 workouts in 8 weeks
+            if (!saved) return { completed: 0, total: totalWorkouts };
             
             const data = JSON.parse(saved);
             let completed = 0;
@@ -3697,7 +3741,7 @@
                 });
             }
             
-            return { completed, total: 48 };
+            return { completed, total: totalWorkouts };
         }
 
         function getCardioData() {
@@ -3734,12 +3778,12 @@
 
         function getVolumeData() {
             // Estimate weekly volume based on program structure
-            const squat = parseFloat(document.getElementById('squat').value) || 315;
-            const bench = parseFloat(document.getElementById('bench').value) || 225;
-            const deadlift = parseFloat(document.getElementById('deadlift').value) || 405;
-            const ohp = parseFloat(document.getElementById('ohp').value) || 135;
+            const squat = parseFloat(document.getElementById('squat').value) || 143;
+            const bench = parseFloat(document.getElementById('bench').value) || 102;
+            const deadlift = parseFloat(document.getElementById('deadlift').value) || 184;
+            const ohp = parseFloat(document.getElementById('ohp').value) || 61;
             
-            // Rough volume estimates per week (in thousands of pounds)
+            // Rough volume estimates per week (in thousands of kg)
             const baseVolume = (squat * 20 + bench * 25 + deadlift * 15 + ohp * 20) / 1000;
             
             return [
@@ -3777,7 +3821,7 @@
             );
             
             document.getElementById('strongestLift').textContent = 
-                `${strongestLift[0]}: ${strongestLift[1]}lbs`;
+                `${strongestLift[0]}: ${strongestLift[1]}kg`;
             
             // Calculate total volume
             const totalVolume = Math.round(volumeData.reduce((a, b) => a + b, 0) * 1000);
